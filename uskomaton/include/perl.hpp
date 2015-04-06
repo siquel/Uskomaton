@@ -1,6 +1,7 @@
 #pragma once
 #include "scripting.hpp"
 #include <iostream>
+#include <memory>
 #include <EXTERN.h>               
 #include <perl.h>      
 #include <XSUB.h>
@@ -8,13 +9,14 @@
 namespace uskomaton {
 	namespace scripting {
 		class PerlScriptingAPI : public ScriptingAPI {
+		private:
+			PerlScriptingAPI();
 		public:
 			class _Impl;
-			// todo unique_ptr
-			_Impl* pImpl;
-			PerlScriptingAPI();
+			std::unique_ptr<_Impl> pImpl;
 			~PerlScriptingAPI();
 			void initialize();
+			static PerlScriptingAPI* getInstance();
 		};
 	}
 
@@ -22,4 +24,3 @@ namespace uskomaton {
 
 EXTERN_C static void uskomaton_perl_register(void* handle, char* name, char* filename);
 EXTERN_C static void* uskomaton_perl_new();
-EXTERN_C void* getPerl();

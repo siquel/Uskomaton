@@ -23,7 +23,6 @@ sub register {
 }
 
 sub load {
-	print "load <3";
 	my $file = shift @_;
 	print $file;
 	my $pkg = file2Package($file);
@@ -33,13 +32,11 @@ sub load {
 		print "$filename is already loaded";
 		return 2;
 	}
-	print "avaan filun";
 	if (open my $handle, $file) {
 		my $src = do { local $/; <$handle>};
 		close $handle;
 		$plugins{$pkg}{filename} = $file;
-		#my $fullpath = File::Spec->rel2abs($file);
-		my $fullpath = "paskaa";
+		my $fullpath = File::Spec->rel2abs($file);
 		$src =~ s/^/#line 1 "$fullpath"\n\x7Bpackage $pkg;/;
 		# add }
 		$src =~ s/\Z/\x7D/;

@@ -4,7 +4,7 @@
 using namespace uskomaton;
 Bot::Bot(const std::string& name, const std::string& login) 
 	: name(name), login(login), initialized(false) {
-		script.push_back(static_cast<PerlScriptingAPI*>(getPerl()));
+		script.push_back(PerlScriptingAPI::getInstance());
 }
 
 Bot::~Bot() {

@@ -12,7 +12,7 @@ private:
 	PerlInterpreter* my_perl;
 	
 public:
-	PerlScriptingAPI::_Impl() {
+	PerlScriptingAPI::_Impl() : my_perl(nullptr) {
 
 	}
 
@@ -54,7 +54,6 @@ PerlScriptingAPI::PerlScriptingAPI() : pImpl(new PerlScriptingAPI::_Impl()) {
 
 PerlScriptingAPI::~PerlScriptingAPI() {
 	pImpl->deinitialize();
-	delete pImpl;
 }
 
 #pragma region XS
@@ -122,7 +121,7 @@ EXTERN_C static void xs_init(pTHX) {
 
 #pragma region C binds
 void* uskomaton_perl_new() {
-	return new PerlScriptingAPI();
+	return PerlScriptingAPI::getInstance();
 }
 
 void uskomaton_perl_register(void* handle, char* name, char* filename) {
@@ -137,4 +136,9 @@ void* getPerl() {
 
 void PerlScriptingAPI::initialize() {
 	pImpl->initialize();
+}
+
+PerlScriptingAPI* uskomaton::scripting::PerlScriptingAPI::getInstance() {
+	static PerlScriptingAPI* api = new PerlScriptingAPI();
+	return api;
 }
