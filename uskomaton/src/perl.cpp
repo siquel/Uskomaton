@@ -1,16 +1,60 @@
 #include "perl.hpp"
 
+// TODO this may not be the greatest idea...
+static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
 
-PerlScriptingAPI::PerlScriptingAPI() : my_perl(nullptr) {
+EXTERN_C static void xs_init(pTHX);
+int perl_load_file(char* filename);
+
+class PerlScriptingAPI::_Impl {
+private:
+	PerlInterpreter* my_perl;
+	
+public:
+	PerlScriptingAPI::_Impl() {
+
+	}
+
+	void initialize() {
+		char *perl_args[] = { "", "-e", "0", "-w" };
+		int arg_count = 4;
+		char* env[] = { "" };
+
+		static const char def[] = { 
+			#include "api/api.pm.h"
+		};
+
+		PERL_SYS_INIT3(&arg_count, (char ***)&perl_args, (char ***)&env);
+		my_perl = perl_alloc();
+		perl_construct(my_perl);
+		PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+		perl_parse(my_perl, xs_init, arg_count, perl_args, (char**)NULL);
+
+		eval_pv(def, TRUE);
+
+		perl_load_file("src\\api\\test.pl");
+	}
+	void deinitialize() {
+		if (my_perl == NULL) return;
+		perl_destruct(my_perl);
+		perl_free(my_perl);
+		PERL_SYS_TERM();
+	}
+
+	void registerPlugin(const char* name, const char* filename) {
+		std::cout << name << std::endl << filename << std::endl;
+	}
+};
+
+
+PerlScriptingAPI::PerlScriptingAPI() : pImpl(new PerlScriptingAPI::_Impl()) {
 
 }
 
 PerlScriptingAPI::~PerlScriptingAPI() {
-	if (my_perl == NULL) return;
-	perl_destruct(my_perl);
-	perl_free(my_perl);
-	PERL_SYS_TERM();
+	pImpl->deinitialize();
+	delete pImpl;
 }
 
 #pragma region XS
@@ -56,8 +100,12 @@ XS (XS_uskomaton_register) {
 	if (items == 2) {
 		name = SvPV_nolen(ST(0));
 		filename = SvPV_nolen(ST(1));
+
+		uskomaton_perl_register(ph, name, filename);
 		// loaded
 		XSRETURN_IV(1);
+		
+		
 	} else {
 		return;
 	}
@@ -72,22 +120,21 @@ EXTERN_C static void xs_init(pTHX) {
 
 #pragma endregion
 
+#pragma region C binds
+void* uskomaton_perl_new() {
+	return new PerlScriptingAPI();
+}
+
+void uskomaton_perl_register(void* handle, char* name, char* filename) {
+	PerlScriptingAPI::_Impl* api = static_cast<PerlScriptingAPI::_Impl*>(handle);
+	api->registerPlugin(name, filename);
+}
+
+void* getPerl() {
+	return ph;
+}
+#pragma endregion
+
 void PerlScriptingAPI::initialize() {
-	char *perl_args[] = { "", "-e", "0", "-w" };
-	int arg_count = 4;
-	char* env[] = { "" };
-
-	static const char def[] = { 
-#include "api/api.pm.h"
-	};
-
-	PERL_SYS_INIT3(&arg_count, (char ***)&perl_args, (char ***)&env);
-	my_perl = perl_alloc();
-	perl_construct(my_perl);
-	PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-	perl_parse(my_perl, xs_init, arg_count, perl_args, (char**)NULL);
-
-	eval_pv(def, TRUE);
-
-	perl_load_file("src\\api\\test.pl");
+	pImpl->initialize();
 }
