@@ -16,7 +16,7 @@ public:
 	PerlScriptingAPI::_Impl() : my_perl(nullptr), bot(nullptr) {
 
 	}
-
+	std::vector<HookData*> hooks;
 	void initialize(uskomaton::Bot* bot) {
 		this->bot = bot;
 		char *perl_args[] = { "", "-e", "0", "-w" };
@@ -58,6 +58,32 @@ PerlScriptingAPI::PerlScriptingAPI() : pImpl(new PerlScriptingAPI::_Impl()) {
 
 PerlScriptingAPI::~PerlScriptingAPI() {
 	pImpl->deinitialize();
+}
+
+void PerlScriptingAPI::processRawMessage(const std::string& raw) {
+	if (raw.empty()) return;
+	size_t pos = 0;
+	if (raw.at(0) == ':' && (pos = raw.find(" ")) != std::string::npos) {
+		// ignore space
+		pos += 1;
+		size_t end = raw.find(" ", pos);
+		std::string oper = raw.substr(pos, end - pos);
+
+		for (size_t i = 0; i < pImpl->hooks.size(); i++) {
+			HookData* hook = pImpl->hooks[0];
+			if (hook->name == oper) {
+				dSP;
+				ENTER;
+				SAVETMPS;
+				PUSHMARK(SP);
+				call_sv(hook->callback, G_DISCARD | G_NOARGS);
+				PUTBACK;
+				FREETMPS;
+				LEAVE;
+			}
+		}
+	}
+
 }
 
 #pragma region XS
@@ -125,10 +151,29 @@ XS(XS_uskomaton_print) {
 	}
 }
 
+XS(XS_uskomaton_hook_server) {
+	char* message;
+	SV* callback;
+	SV* package;
+	HookData* hookdata = nullptr;
+	dXSARGS;
+	if (items == 3) {
+		message = SvPV_nolen(ST(0));
+		callback = ST(1);
+		package = ST(2);
+		hookdata = new HookData;
+		hookdata->callback = newSVsv(callback);
+		hookdata->package = newSVsv(package);
+		hookdata->name = std::string(message);
+		uskomaton_perl_hook_server(ph, hookdata);
+	}
+}
+
 EXTERN_C static void xs_init(pTHX) {
 	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, __FILE__);
 	newXS("Uskomaton::Internal::register", XS_uskomaton_register, __FILE__);
 	newXS("Uskomaton::Internal::print", XS_uskomaton_print, __FILE__);
+	newXS("Uskomaton::Internal::hookServer", XS_uskomaton_hook_server, __FILE__);
 }
 
 #pragma endregion
@@ -142,6 +187,11 @@ void uskomaton_perl_register(void* handle, char* name, char* filename) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 
 	api->pImpl->registerPlugin(name, filename);
+}
+
+void uskomaton_perl_hook_server(void* handle, HookData* data) {
+	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
+	api->pImpl->hooks.push_back(data);
 }
 
 void* getPerl() {

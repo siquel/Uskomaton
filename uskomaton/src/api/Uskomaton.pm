@@ -54,6 +54,21 @@ sub load {
 	return 0;
 }
 
+sub hookServer {
+	return undef unless @_ >= 2;
+	my ($message, $callback) = @_;
+	unless (ref $callback) {
+		Uskomaton::print("callback isn't reference");
+		die "callback isn't reference";
+	}
+	my $package = findPackage();
+	Uskomaton::Internal::hookServer($message, $callback, $package);
+}
+
+sub hookOnMessage {
+	hookServer('PRIVMSG', shift @_);
+}
+
 sub print {
 	Uskomaton::Internal::print(shift @_);
 }

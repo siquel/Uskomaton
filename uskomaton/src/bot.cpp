@@ -4,8 +4,9 @@
 #include <algorithm>
 using namespace uskomaton;
 Bot::Bot(const std::string& name, const std::string& login) 
-	: name(name), login(login), initialized(false) {
+	: name(name), login(login), initialized(false), listener(this) {
 		script.push_back(PerlScriptingAPI::getInstance());
+		client.addListener(&listener);
 }
 
 Bot::~Bot() {
@@ -27,4 +28,16 @@ void Bot::initialize() {
 
 void Bot::addCommand(uskomaton::Command* command) {
 	commands.push_back(command);
+}
+
+const std::vector<ScriptingAPI*>& Bot::getScripts() const {
+	return script;
+}
+
+void Bot::connectTo(const std::string& hostname) {
+	client.connectTo(hostname);
+}
+
+void Bot::start() {
+	client.start();
 }

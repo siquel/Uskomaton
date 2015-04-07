@@ -27,6 +27,12 @@
     <ClCompile Include="src\command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\irc\ircclient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\irc\botmsglistener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\command.hpp">
@@ -39,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\perl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\irc\ircclient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\irc\botmsglistener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

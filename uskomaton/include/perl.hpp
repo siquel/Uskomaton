@@ -6,6 +6,11 @@
 #include <perl.h>      
 #include <XSUB.h>
 
+typedef struct HookData {
+	std::string name;
+	SV* callback;
+	SV* package;
+} HookData;
 namespace uskomaton {
 	class Bot;
 	namespace scripting {
@@ -18,10 +23,12 @@ namespace uskomaton {
 			~PerlScriptingAPI();
 			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
+			void processRawMessage(const std::string& raw);
 		};
 	}
 
 }
 
 EXTERN_C static void uskomaton_perl_register(void* handle, char* name, char* filename);
+EXTERN_C static void uskomaton_perl_hook_server(void* handle, HookData* data);
 EXTERN_C static void* uskomaton_perl_new();
