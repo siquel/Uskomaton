@@ -49,6 +49,10 @@ public:
 		
 		bot->addCommand(new PerlCallback(name));
 	}
+
+	void sendMessage(const char* channel, const char* message) {
+		bot->sendMessage(channel, message);
+	}
 };
 
 
@@ -122,6 +126,17 @@ static int perl_load_file(char* filename) {
 	return execute_perl(sv_2mortal(newSVpv("Uskomaton::load", 0)), filename);
 }
 
+XS(XS_uskomaton_send_message) {
+	char* channel;
+	char* message;
+	dXSARGS;
+	if (items == 2) {
+		channel = SvPV_nolen(ST(0));
+		message = SvPV_nolen(ST(1));
+		uskomaton_perl_send_message(ph, channel, message);
+	}
+}
+
 XS (XS_uskomaton_register) {
 	char* name;
 	char* filename;
@@ -174,6 +189,7 @@ EXTERN_C static void xs_init(pTHX) {
 	newXS("Uskomaton::Internal::register", XS_uskomaton_register, __FILE__);
 	newXS("Uskomaton::Internal::print", XS_uskomaton_print, __FILE__);
 	newXS("Uskomaton::Internal::hookServer", XS_uskomaton_hook_server, __FILE__);
+	newXS("Uskomaton::Internal::sendMessage", XS_uskomaton_send_message, __FILE__);
 }
 
 #pragma endregion
@@ -194,8 +210,9 @@ void uskomaton_perl_hook_server(void* handle, HookData* data) {
 	api->pImpl->hooks.push_back(data);
 }
 
-void* getPerl() {
-	return ph;
+void uskomaton_perl_send_message(void* handle, const char* channel, const char* message) {
+	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
+	api->pImpl->sendMessage(channel, message);
 }
 #pragma endregion
 

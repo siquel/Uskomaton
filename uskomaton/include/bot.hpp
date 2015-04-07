@@ -14,14 +14,13 @@ namespace uskomaton {
 		void addCommand(Command* command);
 		const std::vector<ScriptingAPI*>& getScripts() const;
 		void connectTo(const std::string& hostname);
+		void sendMessage(const std::string& channel, const std::string& message);
 		// debug
 		void start();
 	private:
 		bool initialized;
 		IrcClient client;
 		BotMessageListener listener;
-		std::string name;
-		std::string login;
 		std::vector<uskomaton::Command*> commands;
 		std::vector<ScriptingAPI*> script;
 	};

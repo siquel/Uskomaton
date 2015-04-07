@@ -65,6 +65,11 @@ sub hookServer {
 	Uskomaton::Internal::hookServer($message, $callback, $package);
 }
 
+sub sendMessage {
+	return undef unless @_ >= 2;
+	Uskomaton::Internal::sendMessage(shift @_, shift @_);
+}
+
 sub hookOnMessage {
 	hookServer('PRIVMSG', shift @_);
 }

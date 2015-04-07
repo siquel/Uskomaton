@@ -4,7 +4,7 @@
 #include <algorithm>
 using namespace uskomaton;
 Bot::Bot(const std::string& name, const std::string& login) 
-	: name(name), login(login), initialized(false), listener(this) {
+	: client(name, login), initialized(false), listener(this) {
 		script.push_back(PerlScriptingAPI::getInstance());
 		client.addListener(&listener);
 }
@@ -40,4 +40,8 @@ void Bot::connectTo(const std::string& hostname) {
 
 void Bot::start() {
 	client.start();
+}
+
+void Bot::sendMessage(const std::string& channel, const std::string& message) {
+	client.sendMessage(channel, message);
 }

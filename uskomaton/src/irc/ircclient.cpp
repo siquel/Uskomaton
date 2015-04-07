@@ -1,7 +1,12 @@
+#include <iostream>
 #include "irc/ircclient.hpp"
 #include <algorithm>
 
 void IrcMessageListener::onRawMessage(const std::string& msg) {}
+
+IrcClient::IrcClient(const std::string& nick, const std::string& login) : nick(nick), login(login){
+
+}
 
 void IrcClient::addListener(IrcMessageListener* listener) {
 	listeners.push_back(listener);
@@ -32,4 +37,13 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	notifyListeners([&raw](IrcMessageListener* listener) {
 		listener->onRawMessage(raw);
 	});
+}
+
+void IrcClient::sendMessage(const std::string& channel, const std::string& message) {
+	std::string line = std::string("PRIVMSG ") + channel + std::string(" :") + message;
+	sendRawMessage(line);
+}
+
+void IrcClient::sendRawMessage(const std::string& line) {
+	std::cout << line.c_str() << "\r\n";
 }
