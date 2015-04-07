@@ -1,5 +1,6 @@
 #include "bot.hpp"
 #include "perl.hpp"
+#include "command.hpp"
 #include <algorithm>
 using namespace uskomaton;
 Bot::Bot(const std::string& name, const std::string& login) 
@@ -17,8 +18,13 @@ Bot::~Bot() {
 
 void Bot::initialize() {
 	if (initialized) return;
-	std::for_each(script.begin(), script.end(), [](ScriptingAPI* api) {
-		api->initialize();
-	});
+	commands.reserve(10);
+	for (size_t i = 0; i < script.size(); i++) {
+		script[i]->initialize(this);
+	}
 	initialized = true;
+}
+
+void Bot::addCommand(uskomaton::Command* command) {
+	commands.push_back(command);
 }

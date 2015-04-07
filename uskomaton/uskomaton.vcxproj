@@ -68,6 +68,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\bot.cpp" />
+    <ClCompile Include="src\command.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\perl.cpp" />
   </ItemGroup>

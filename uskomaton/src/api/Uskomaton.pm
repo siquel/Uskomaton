@@ -54,6 +54,10 @@ sub load {
 	return 0;
 }
 
+sub print {
+	Uskomaton::Internal::print(shift @_);
+}
+
 sub _eval {
 	no strict;
 	no warnings;

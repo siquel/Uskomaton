@@ -1,3 +1,4 @@
+#include "command.hpp"
 #include "perl.hpp"
 
 // TODO this may not be the greatest idea...
@@ -10,13 +11,14 @@ int perl_load_file(char* filename);
 class PerlScriptingAPI::_Impl {
 private:
 	PerlInterpreter* my_perl;
-	
+	Bot* bot;
 public:
-	PerlScriptingAPI::_Impl() : my_perl(nullptr) {
+	PerlScriptingAPI::_Impl() : my_perl(nullptr), bot(nullptr) {
 
 	}
 
-	void initialize() {
+	void initialize(uskomaton::Bot* bot) {
+		this->bot = bot;
 		char *perl_args[] = { "", "-e", "0", "-w" };
 		int arg_count = 4;
 		char* env[] = { "" };
@@ -44,6 +46,8 @@ public:
 
 	void registerPlugin(const char* name, const char* filename) {
 		std::cout << name << std::endl << filename << std::endl;
+		
+		bot->addCommand(new PerlCallback(name));
 	}
 };
 
@@ -112,9 +116,19 @@ XS (XS_uskomaton_register) {
 
 }
 
+XS(XS_uskomaton_print) {
+	char* str;
+	dXSARGS;
+	if (items == 1) {
+		str = SvPV_nolen(ST(0));
+		std::cout << str;
+	}
+}
+
 EXTERN_C static void xs_init(pTHX) {
 	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, __FILE__);
 	newXS("Uskomaton::Internal::register", XS_uskomaton_register, __FILE__);
+	newXS("Uskomaton::Internal::print", XS_uskomaton_print, __FILE__);
 }
 
 #pragma endregion
@@ -125,8 +139,9 @@ void* uskomaton_perl_new() {
 }
 
 void uskomaton_perl_register(void* handle, char* name, char* filename) {
-	PerlScriptingAPI::_Impl* api = static_cast<PerlScriptingAPI::_Impl*>(handle);
-	api->registerPlugin(name, filename);
+	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
+
+	api->pImpl->registerPlugin(name, filename);
 }
 
 void* getPerl() {
@@ -134,8 +149,8 @@ void* getPerl() {
 }
 #pragma endregion
 
-void PerlScriptingAPI::initialize() {
-	pImpl->initialize();
+void PerlScriptingAPI::initialize(uskomaton::Bot* bot) {
+	pImpl->initialize(bot);
 }
 
 PerlScriptingAPI* uskomaton::scripting::PerlScriptingAPI::getInstance() {

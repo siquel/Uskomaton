@@ -7,6 +7,7 @@
 #include <XSUB.h>
 
 namespace uskomaton {
+	class Bot;
 	namespace scripting {
 		class PerlScriptingAPI : public ScriptingAPI {
 		private:
@@ -15,7 +16,7 @@ namespace uskomaton {
 			class _Impl;
 			std::unique_ptr<_Impl> pImpl;
 			~PerlScriptingAPI();
-			void initialize();
+			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
 		};
 	}
