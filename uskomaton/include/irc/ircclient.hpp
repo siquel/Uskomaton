@@ -2,6 +2,10 @@
 #include <vector>
 #include <functional>
 
+#include <boost/asio.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/signals2/signal.hpp>
+
 class IrcMessageListener {
 public:
 	IrcMessageListener() = default;
@@ -18,10 +22,21 @@ private:
 	void onRawMessage(const std::string& msg);
 	void onServerPing(const std::string& ping);
 	void notifyListeners(notification_t what);
+	void receive(boost::system::error_code const&, size_t);
+	void read();
 	std::string login;
 	std::string nick;
+
+	boost::asio::io_service ioService;
+	boost::asio::streambuf buffer;
+	boost::asio::ip::tcp::socket socket;
+
+	boost::thread inputThread;
+	boost::thread outputThread;
+
 public:
 	IrcClient(const std::string& nick, const std::string& login);
+	~IrcClient();
 	void addListener(IrcMessageListener* listener);
 	void connectTo(const std::string& hostname, int port, const std::string& password);
 	void connectTo(const std::string& hostname, int port);
@@ -34,4 +49,5 @@ public:
 	void sendPartChannel(const std::string& channel);
 	// debug
 	void start();
+	void terminate();
 };

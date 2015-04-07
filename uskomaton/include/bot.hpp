@@ -15,8 +15,10 @@ namespace uskomaton {
 		const std::vector<ScriptingAPI*>& getScripts() const;
 		void connectTo(const std::string& hostname);
 		void sendMessage(const std::string& channel, const std::string& message);
+		void joinChannel(const std::string& channel);
 		// debug
 		void start();
+		void terminate();
 	private:
 		bool initialized;
 		IrcClient client;

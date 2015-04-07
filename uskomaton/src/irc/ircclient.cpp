@@ -6,8 +6,13 @@
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
 
-IrcClient::IrcClient(const std::string& nick, const std::string& login) : nick(nick), login(login){
+IrcClient::IrcClient(const std::string& nick, const std::string& login)
+	: nick(nick), login(login), socket(ioService){
 
+}
+
+IrcClient::~IrcClient() {
+	//terminate();
 }
 
 void IrcClient::addListener(IrcMessageListener* listener) {
@@ -18,12 +23,65 @@ void IrcClient::notifyListeners(notification_t what) {
 	std::for_each(listeners.begin(), listeners.end(), what);
 }
 
-void IrcClient::connectTo(const std::string& hostname, int port, const std::string& password) {
-	sendNick(nick);
-	sendUser(login);
-	sendJoinChannel("#test123");
-	sendJoinChannel("#testpass", "password");
+void IrcClient::connectTo(const std::string& hostname, int _port, const std::string& password) {
+	using namespace boost::asio::ip;
+	std::stringstream ss;
+	ss << _port;
+	std::string port;
+	ss >> port;
+
+	bool connected(false);
+	try {
+		tcp::resolver resolver(ioService);
+		tcp::resolver::query query(hostname, port);
+		tcp::resolver::iterator endpointIt = resolver.resolve(query);
+		boost::asio::connect(socket, endpointIt);
+
+		sendNick(nick);
+		sendUser(login);
+		while (true) {
+			boost::asio::read_until(socket, buffer, "\r\n");
+			std::istream is(&buffer);
+			std::string line;
+			std::getline(is, line);
+			std::cout << line << std::endl;
+			onRawMessage(line);
+			std::vector<std::string> tokens = uskomaton::util::split(line, ' ');
+			// connected
+			if (tokens[1] == "004") {
+				connected = true;
+				break;
+			}
+		}
+
+		if (connected) {
+			read();
+			inputThread = boost::thread(boost::bind(&boost::asio::io_service::run, &ioService));
+		}
+	}
+	catch (boost::system::system_error& err) {
+
+	}
 }
+
+void IrcClient::receive(boost::system::error_code const& e, size_t bytes) {
+	std::istream is(&buffer);
+	std::string line;
+	std::getline(is, line);
+	onRawMessage(line);
+	read();
+}
+
+void IrcClient::read() {
+	try {
+		if (!socket.is_open()) return;
+		boost::asio::async_read_until(socket, buffer, "\r\n", boost::bind(&IrcClient::receive, this, _1, _2));
+	}
+	catch (boost::system::system_error& e) {
+
+	}
+}
+
 void IrcClient::connectTo(const std::string& hostname, int port) {
 	connectTo(hostname, port, "");
 }
@@ -78,7 +136,7 @@ void IrcClient::onRawMessage(const std::string& raw) {
 }
 
 void IrcClient::onServerPing(const std::string& ping) {
-	// TODO respond ping
+	sendRawMessage(std::string("PONG ") + ping);
 	notifyListeners([&ping](IrcMessageListener* listener) {
 		listener->onServerPing(ping);
 	});
@@ -90,7 +148,14 @@ void IrcClient::sendMessage(const std::string& channel, const std::string& messa
 }
 
 void IrcClient::sendRawMessage(const std::string& line) {
-	std::cout << line.c_str() << "\r\n";
+	std::string raw(line + "\r\n");
+	std::cout << ">>" << raw;
+	try {
+		boost::asio::write(socket, boost::asio::buffer(raw.data(), raw.size()), boost::asio::transfer_all());
+	}
+	catch (boost::system::system_error& error) {
+
+	}
 }
 
 void IrcClient::sendNick(const std::string& nick) {
@@ -108,4 +173,11 @@ void IrcClient::sendJoinChannel(const std::string& channel, const std::string& p
 
 void IrcClient::sendPartChannel(const std::string& channel) {
 	sendRawMessage(std::string("PART ") + channel);
+}
+
+void IrcClient::terminate() {
+	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_receive);
+	socket.close();
+	inputThread.join();
+	outputThread.join();
 }

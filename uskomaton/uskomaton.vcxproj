@@ -43,13 +43,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./include;C:\perl\lib\CORE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\dev\libs\boost\include\boost-1_56;./include;C:\perl\lib\CORE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>perl520.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\perl\lib\CORE</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\perl\lib\CORE;C:\dev\libs\boost\lib</AdditionalLibraryDirectories>
       <DelayLoadDLLs>perl520.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>

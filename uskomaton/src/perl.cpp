@@ -10,13 +10,16 @@ int perl_load_file(char* filename);
 
 class PerlScriptingAPI::_Impl {
 private:
-	PerlInterpreter* my_perl;
 	Bot* bot;
+	PerlInterpreter* my_perl;
 public:
 	PerlScriptingAPI::_Impl() : my_perl(nullptr), bot(nullptr) {
 
 	}
 	std::vector<HookData*> hooks;
+	PerlInterpreter* getPerl() const {
+		return my_perl;
+	}
 	void initialize(uskomaton::Bot* bot) {
 		this->bot = bot;
 		char *perl_args[] = { "", "-e", "0", "-w" };
@@ -31,6 +34,7 @@ public:
 		my_perl = perl_alloc();
 		perl_construct(my_perl);
 		PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+		PL_perl_destruct_level = 1;
 		perl_parse(my_perl, xs_init, arg_count, perl_args, (char**)NULL);
 
 		eval_pv(def, TRUE);
@@ -39,6 +43,7 @@ public:
 	}
 	void deinitialize() {
 		if (my_perl == NULL) return;
+		PERL_SET_CONTEXT(my_perl);
 		perl_destruct(my_perl);
 		perl_free(my_perl);
 		PERL_SYS_TERM();
@@ -68,14 +73,17 @@ void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::stri
 	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
 		HookData* hook = pImpl->hooks[0];
 		if (hook->name == command) {
-			dSP;
-			ENTER;
-			SAVETMPS;
-			PUSHMARK(SP);
-			call_sv(hook->callback, G_DISCARD | G_NOARGS);
-			PUTBACK;
-			FREETMPS;
-			LEAVE;
+			PERL_SET_CONTEXT(pImpl->getPerl());
+			{
+				dSP;
+				ENTER;
+				SAVETMPS;
+				PUSHMARK(SP);
+				PUTBACK;
+				call_sv(hook->callback, G_NOARGS | G_DISCARD);
+				FREETMPS;
+				LEAVE;
+			}
 		}
 	}
 }

@@ -14,7 +14,12 @@ Bot::~Bot() {
 		delete script[i];
 		script[i] = nullptr;
 	}
-	script.clear();
+	
+	for (size_t i = 0; i < commands.size(); i++) {
+		delete commands[i];
+		commands[i] = nullptr;
+	}
+	
 }
 
 void Bot::initialize() {
@@ -45,5 +50,13 @@ void Bot::start() {
 
 void Bot::sendMessage(const std::string& channel, const std::string& message) {
 	client.sendMessage(channel, message);
+}
+
+void uskomaton::Bot::joinChannel(const std::string& channel) {
+	client.sendJoinChannel(channel);
+}
+
+void uskomaton::Bot::terminate() {
+	client.terminate();
 }
 
