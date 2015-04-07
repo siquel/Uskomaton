@@ -64,30 +64,20 @@ PerlScriptingAPI::~PerlScriptingAPI() {
 	pImpl->deinitialize();
 }
 
-void PerlScriptingAPI::processRawMessage(const std::string& raw) {
-	if (raw.empty()) return;
-	size_t pos = 0;
-	if (raw.at(0) == ':' && (pos = raw.find(" ")) != std::string::npos) {
-		// ignore space
-		pos += 1;
-		size_t end = raw.find(" ", pos);
-		std::string oper = raw.substr(pos, end - pos);
-
-		for (size_t i = 0; i < pImpl->hooks.size(); i++) {
-			HookData* hook = pImpl->hooks[0];
-			if (hook->name == oper) {
-				dSP;
-				ENTER;
-				SAVETMPS;
-				PUSHMARK(SP);
-				call_sv(hook->callback, G_DISCARD | G_NOARGS);
-				PUTBACK;
-				FREETMPS;
-				LEAVE;
-			}
+void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::string& command, const std::string& target) {
+	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
+		HookData* hook = pImpl->hooks[0];
+		if (hook->name == command) {
+			dSP;
+			ENTER;
+			SAVETMPS;
+			PUSHMARK(SP);
+			call_sv(hook->callback, G_DISCARD | G_NOARGS);
+			PUTBACK;
+			FREETMPS;
+			LEAVE;
 		}
 	}
-
 }
 
 #pragma region XS

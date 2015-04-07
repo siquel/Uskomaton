@@ -81,6 +81,7 @@
     <ClInclude Include="include\irc\ircclient.hpp" />
     <ClInclude Include="include\perl.hpp" />
     <ClInclude Include="include\scripting.hpp" />
+    <ClInclude Include="include\util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

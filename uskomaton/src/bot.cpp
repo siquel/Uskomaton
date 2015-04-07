@@ -39,9 +39,11 @@ void Bot::connectTo(const std::string& hostname) {
 }
 
 void Bot::start() {
+	connectTo("irc.example.org");
 	client.start();
 }
 
 void Bot::sendMessage(const std::string& channel, const std::string& message) {
 	client.sendMessage(channel, message);
 }
+

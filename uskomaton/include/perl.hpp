@@ -23,7 +23,7 @@ namespace uskomaton {
 			~PerlScriptingAPI();
 			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
-			void processRawMessage(const std::string& raw);
+			void processRawMessage(const std::string& raw, const std::string& command, const std::string& target);
 		};
 	}
 
