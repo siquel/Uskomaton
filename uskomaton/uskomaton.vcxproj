@@ -69,6 +69,7 @@
   <ItemGroup>
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\command.cpp" />
+    <ClCompile Include="src\conf\config.cpp" />
     <ClCompile Include="src\irc\botmsglistener.cpp" />
     <ClCompile Include="src\irc\ircclient.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -77,6 +78,7 @@
   <ItemGroup>
     <ClInclude Include="include\bot.hpp" />
     <ClInclude Include="include\command.hpp" />
+    <ClInclude Include="include\conf\config.hpp" />
     <ClInclude Include="include\irc\botmsglistener.hpp" />
     <ClInclude Include="include\irc\ircclient.hpp" />
     <ClInclude Include="include\perl.hpp" />
