@@ -16,6 +16,6 @@ solution("uskomaton")
 		prebuildcommands { "cd src/api && perl generate_header.pl" }
 
 		configuration "linux"
-			links { "boost_system", "boost_thread", "perl", "pthread"  }
+			links { "boost_system", "boost_thread", "boost_filesystem", "perl", "pthread"  }
 			includedirs { "/usr/lib/perl5/core_perl/CORE/" }
 			libdirs { "/usr/lib/perl5/core_perl/CORE" }
