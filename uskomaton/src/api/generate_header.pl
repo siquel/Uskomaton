@@ -44,7 +44,7 @@ for my $files (
 		print $header qq["{\\n"\n];
 		print $header qq{"#line 1 \\"$input\\"\\n"\n};
 		print $header header( $input );
-		print $header qq["}\\n"\n];
+		print $header qq[}\\n"\n];
 	}
 	close $header;
 }

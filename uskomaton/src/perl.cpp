@@ -5,15 +5,17 @@
 static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
 
-EXTERN_C static void xs_init(pTHX);
-int perl_load_file(char* filename);
+extern "C" {
+	static void xs_init(pTHX);
+	static int perl_load_file(char* filename);
+}
 
 class PerlScriptingAPI::_Impl {
 private:
 	Bot* bot;
 	PerlInterpreter* my_perl;
 public:
-	PerlScriptingAPI::_Impl() : my_perl(nullptr), bot(nullptr) {
+	_Impl() : my_perl(nullptr), bot(nullptr) {
 
 	}
 	std::vector<HookData*> hooks;
@@ -182,7 +184,7 @@ XS(XS_uskomaton_hook_server) {
 	}
 }
 
-EXTERN_C static void xs_init(pTHX) {
+static void xs_init(pTHX) {
 	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, __FILE__);
 	newXS("Uskomaton::Internal::register", XS_uskomaton_register, __FILE__);
 	newXS("Uskomaton::Internal::print", XS_uskomaton_print, __FILE__);

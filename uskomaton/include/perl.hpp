@@ -28,8 +28,9 @@ namespace uskomaton {
 	}
 
 }
-
-EXTERN_C static void uskomaton_perl_register(void* handle, char* name, char* filename);
-EXTERN_C static void uskomaton_perl_hook_server(void* handle, HookData* data);
-EXTERN_C static void uskomaton_perl_send_message(void* handle, const char* channel, const char* message);
-EXTERN_C static void* uskomaton_perl_new();
+extern "C" {
+	static void uskomaton_perl_register(void* handle, char* name, char* filename);
+	static void uskomaton_perl_hook_server(void* handle, HookData* data);
+	static void uskomaton_perl_send_message(void* handle, const char* channel, const char* message);
+	static void* uskomaton_perl_new();
+}
