@@ -16,6 +16,7 @@ namespace uskomaton {
 	namespace scripting {
 		class PerlScriptingAPI : public ScriptingAPI {
 		private:
+			bool isInitialized;
 			PerlScriptingAPI();
 		public:
 			class _Impl;
@@ -24,6 +25,7 @@ namespace uskomaton {
 			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
 			void processRawMessage(const std::string& raw, const std::string& command, const std::string& target);
+			void autoloadFrom(const std::string& path);
 		};
 	}
 

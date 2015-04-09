@@ -5,5 +5,5 @@ Uskomaton::hookOnMessage(\&test2);
 
 sub test2 {
 	Uskomaton::print("from callback");
-	Uskomaton::sendMessage("#dev", "aamuja :D");
+	#Uskomaton::sendMessage("#dev", "aamuja :D");
 }

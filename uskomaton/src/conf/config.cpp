@@ -27,7 +27,9 @@ bool uskomaton::config::Configuration::fromFile(const std::string& filename, Con
 	std::string login(globals.get_optional<std::string>("login").value_or(""));
 	std::string scriptPath(globals.get_optional<std::string>("script").get_value_or(""));
 	std::string autoloadFrom(globals.get_optional<std::string>("autoload").get_value_or(""));
-
+	
+	conf.autoload = autoloadFrom;
+	conf.scriptPath = scriptPath;
 
 	for (const auto& entry : tree) {
 		const std::string& key = entry.first;
@@ -52,17 +54,29 @@ bool uskomaton::config::Configuration::fromFile(const std::string& filename, Con
 			config.scripts = uskomaton::util::split(value.get_optional<std::string>("scripts").get_value_or(""), ' ');
 			config.auth = value.get_optional<bool>("auth").get_value_or(false);
 			config.username = value.get_optional<std::string>("username").get_value_or(username);
-
+			config.login = value.get_optional<std::string>("login").get_value_or(login);
 			config.autoloadFrom = value.get_optional<std::string>("autoload").get_value_or(autoloadFrom);
 
 			if (config.auth) {
-				config.login = value.get_optional<std::string>("login").get_value_or(login);
 				config.password = value.get<std::string>("password");
 			}
 			conf.servers.push_back(config);
 		}
 	}
 
+	settingsFile.close();
 
 	return true;
+}
+
+const std::string& uskomaton::config::Configuration::getAutoloadPath() const {
+	return autoload;
+}
+
+const std::string& uskomaton::config::Configuration::getScriptPath() const {
+	return scriptPath;
+}
+
+const std::vector<struct ServerConfiguration> Configuration::getServerConfigs() const {
+	return servers;
 }

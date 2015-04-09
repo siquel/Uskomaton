@@ -11,7 +11,12 @@ namespace uskomaton {
 		public:
 			Configuration();
 			static bool fromFile(const std::string&, Configuration& conf);
+			const std::vector<struct ServerConfiguration> getServerConfigs() const;
+			const std::string& getAutoloadPath() const;
+			const std::string& getScriptPath() const;
 		private:
+			std::string autoload;
+			std::string scriptPath;
 		};
 
 		struct ServerConfiguration {

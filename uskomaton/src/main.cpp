@@ -4,10 +4,9 @@ int main ( int argc, char **argv) {
 	using namespace uskomaton;
 	config::Configuration conf;
 	config::Configuration::fromFile("server.conf", conf);
-    Bot bot("Uskomaton", "uskomaton");
+    Bot bot(conf);
 	bot.initialize();
-	bot.connectTo("irc.example.org");
-	bot.joinChannel("#dev");
+	bot.connectServers();
 	std::string line;
 	while (getline(std::cin, line)) {
 		if (line == "q") {

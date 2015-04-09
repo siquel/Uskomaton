@@ -176,7 +176,7 @@ void IrcClient::sendPartChannel(const std::string& channel) {
 }
 
 void IrcClient::terminate() {
-	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_receive);
+	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 	socket.close();
 	inputThread.join();
 	outputThread.join();

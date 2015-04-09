@@ -1,5 +1,7 @@
 #include "command.hpp"
+#include "boost/filesystem.hpp"
 #include "perl.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 // TODO this may not be the greatest idea...
 static void* ph = uskomaton_perl_new();
@@ -41,7 +43,7 @@ public:
 
 		eval_pv(def, TRUE);
 
-		perl_load_file("src\\api\\test.pl");
+		//perl_load_file("src\\api\\test.pl");
 	}
 	void deinitialize() {
 		if (my_perl == NULL) return;
@@ -63,7 +65,8 @@ public:
 };
 
 
-PerlScriptingAPI::PerlScriptingAPI() : pImpl(new PerlScriptingAPI::_Impl()) {
+PerlScriptingAPI::PerlScriptingAPI() 
+	: pImpl(new PerlScriptingAPI::_Impl()), isInitialized(false) {
 
 }
 
@@ -216,11 +219,36 @@ void uskomaton_perl_send_message(void* handle, const char* channel, const char* 
 }
 #pragma endregion
 
+// TODO gotta pass context?
 void PerlScriptingAPI::initialize(uskomaton::Bot* bot) {
-	pImpl->initialize(bot);
+	if (!isInitialized)
+		pImpl->initialize(bot);
+	isInitialized = true;
 }
 
 PerlScriptingAPI* uskomaton::scripting::PerlScriptingAPI::getInstance() {
 	static PerlScriptingAPI* api = new PerlScriptingAPI();
 	return api;
+}
+
+void uskomaton::scripting::PerlScriptingAPI::autoloadFrom(const std::string& path) {
+	namespace fs = boost::filesystem;
+	fs::path dir(path);
+	fs::directory_iterator end;
+
+	if (fs::exists(dir) && fs::is_directory(dir)) {
+		for (fs::directory_iterator iter(dir); iter != end; ++iter) {
+			if (fs::is_regular_file(iter->status())) {
+				if (!boost::algorithm::ends_with(iter->path().string(), ".pl")) continue;
+				std::string filename = iter->path().string();
+				std::cout << "loading file " << filename << std::endl;
+				char file[255] = { 0 };
+				strcpy(file, filename.c_str());
+				perl_load_file(file);
+			}
+		}
+	}
+	else {
+		std::cout << path << " doesn't exist or isn't a directory" << std::endl;
+	}
 }
