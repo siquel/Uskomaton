@@ -11,6 +11,7 @@ public:
 	IrcMessageListener() = default;
 	~IrcMessageListener() = default;
 	virtual void onRawMessage(const std::string& msg, const std::string& command, const std::string& target);
+	virtual void onMessage(const std::string& channel, const std::string& message, const std::string& sender);
 	virtual void onServerPing(const std::string& ping);
 };
 
@@ -24,6 +25,7 @@ private:
 	void notifyListeners(notification_t what);
 	void receive(boost::system::error_code const&, size_t);
 	void read();
+	void processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens);
 	std::string login;
 	std::string nick;
 	std::string server;

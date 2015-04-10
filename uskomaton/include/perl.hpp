@@ -24,7 +24,8 @@ namespace uskomaton {
 			~PerlScriptingAPI();
 			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
-			void processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target);
+			void processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) override;
+			void processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) override;
 			void autoloadFrom(const std::string& path);
 		};
 	}

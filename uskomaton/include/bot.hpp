@@ -19,8 +19,6 @@ namespace uskomaton {
 		void sendMessage(const std::string& context, const std::string& channel, const std::string& message);
 		void joinChannel(const std::string& context, const std::string& channel);
 		const uskomaton::config::ServerConfiguration* getConfigFor(const std::string& name) const;
-		// debug
-		void start();
 		void terminate();
 	private:
 		uskomaton::config::Configuration config;

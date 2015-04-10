@@ -4,6 +4,7 @@
 #include "util.hpp"
 
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
+void IrcMessageListener::onMessage(const std::string& channel, const std::string& message, const std::string& sender) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
 
 IrcClient::IrcClient(const std::string& context, const std::string& nick, const std::string& login)
@@ -100,8 +101,10 @@ void IrcClient::onRawMessage(const std::string& raw) {
 
 	if (raw.empty()) return;
 
+	std::string sourceraw;
 	std::vector<std::string> tokens = uskomaton::util::split(raw, ' ');
 	if (tokens.at(0).at(0) == ':') {
+		sourceraw = tokens[0];
 		tokens.erase(tokens.begin());
 	}
 
@@ -123,13 +126,13 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	}
 
 	// valid IRC line?
-	if (raw.at(0) != ':') {
+	if (sourceraw.at(0) != ':') {
 		// TODO unknown line
 		return;
 	}
 	
 	// TODO parse users etc
-
+	processCommand(command, target, tokens);
 	notifyListeners([&raw, &command, &target](IrcMessageListener* listener) {
 		listener->onRawMessage(raw, command, target);
 	});
@@ -184,4 +187,25 @@ void IrcClient::terminate() {
 
 const std::string& IrcClient::getServerName() const {
 	return server;
+}
+
+void IrcClient::processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens) {
+	std::stringstream ss;
+	std::string message;
+	std::for_each(tokens.begin(), tokens.end(), [&ss](std::string& s) {
+		ss << s << " ";
+	});
+	if (!ss.str().empty()) {
+		message = ss.str().substr(0, ss.str().size() - 1);
+	}
+	// CTCP
+	if (command == "PRIVMSG" && message.find('\x0001') == 0  && message.find('\x0001') == message.size() - 1) {
+
+	}
+	// message to channel or to us
+	else if (command == "PRIVMSG" && !target.empty()) {
+		notifyListeners([&target, &message](IrcMessageListener* listener) {
+			listener->onMessage(target, message, "sender_todo");
+		});
+	}
 }

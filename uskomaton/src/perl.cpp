@@ -74,10 +74,10 @@ PerlScriptingAPI::~PerlScriptingAPI() {
 	pImpl->deinitialize();
 }
 
-void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) {
+void PerlScriptingAPI::processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) {
 	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
 		HookData* hook = pImpl->hooks[0];
-		if (hook->name == command) {
+		if (hook->name == "PRIVMSG") {
 			PERL_SET_CONTEXT(pImpl->getPerl());
 			{
 				dSP;
@@ -87,7 +87,9 @@ void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::stri
 
 				PUSHMARK(SP);
 				XPUSHs(sv_2mortal(newSVpv(context.c_str(), 0)));
-				XPUSHs(sv_2mortal(newSVpv(target.c_str(), 0)));
+				XPUSHs(sv_2mortal(newSVpv(channel.c_str(), 0)));
+				XPUSHs(sv_2mortal(newSVpv(message.c_str(), 0)));
+				XPUSHs(sv_2mortal(newSVpv(sender.c_str(), 0)));
 				PUTBACK;
 				call_sv(hook->callback, G_DISCARD);
 				FREETMPS;
@@ -95,6 +97,10 @@ void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::stri
 			}
 		}
 	}
+}
+
+void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) {
+	
 }
 
 #pragma region XS
