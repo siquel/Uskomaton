@@ -192,11 +192,21 @@ const std::string& IrcClient::getServerName() const {
 void IrcClient::processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens) {
 	std::stringstream ss;
 	std::string message;
-	std::for_each(tokens.begin(), tokens.end(), [&ss](std::string& s) {
-		ss << s << " ";
-	});
+	// remove target TODO may not be the best idea
+	tokens.erase(tokens.begin());
+	for (size_t i = 0; i < tokens.size(); i++) {
+		if (i == tokens.size() - 1) {
+			ss << tokens[i];
+		}
+		else {
+			ss << tokens[i] << " ";
+		}
+	}
+
 	if (ss.str().size() != 0) {
-		message = ss.str().substr(0, ss.str().size() - 1);
+		message = ss.str();
+		// remove :
+		message = message.substr(1);
 	}
 	// CTCP
 	if (command == "PRIVMSG" && message.find('\x0001') == 0  && message.find('\x0001') == message.size() - 1) {
