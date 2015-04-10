@@ -1,12 +1,14 @@
 #include <iostream>
 #include "irc/ircclient.hpp"
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include "util.hpp"
 
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
 void IrcMessageListener::onMessage(const std::string& channel, const std::string& message, const std::string& sender) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
 void IrcMessageListener::onJoinChannel(const std::string& channel, const std::string& sender) {}
+void IrcMessageListener::onPrivateMessage(const std::string& target, const std::string& message, const std::string& sender) {}
 
 using namespace uskomaton::irc;
 
@@ -208,12 +210,88 @@ void IrcClient::processCommand(const std::string& command, const std::string& ta
 	}
 	// CTCP
 	if (command == "PRIVMSG" && message.find('\x0001') == 0  && message.find('\x0001') == message.size() - 1) {
-		std::cout << "CTCP VITTU" << std::endl;
+		std::string request(message.substr(1, message.size() - 1));
+		if (request == "VERSION") {
+
+		}
+		else if (boost::algorithm::starts_with(request, "ACTION ")) {
+
+		}
+		else if (request == "TIME") {
+
+		}
+		else if (request == "FINGER") {
+
+		}
+		else if (boost::algorithm::starts_with(request, "DCC ")) {
+
+		}
+		else {
+			// unknown
+		}
 	}
-	// message to channel or to us
+	// message to channel
 	else if (command == "PRIVMSG" && !target.empty()) {
 		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
 			listener->onMessage(target, message, sender);
 		});
+	}
+	// message to us
+	else if (command == "PRIVMSG") {
+		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
+			listener->onPrivateMessage(target, message, sender);
+		});
+	}
+	else if (command == "JOIN") {
+		if (sender == nick) {
+			// TODO add to channels
+		}
+		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
+			listener->onJoinChannel(target, sender);
+		});
+	}
+	else if (command == "PART") {
+		if (sender == nick) {
+			// TODO remove channel
+		}
+		else {
+			// TODO remove user from channel
+		}
+		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
+			//listener->onPartChannel(target, message, sender);
+		});
+	}
+	else if (command == "NICK") {
+		if (nick == sender) {
+			// TODO change nick
+		}
+		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
+			// target is the newNick
+			//listener->onChangeNick(target, sender);
+		});
+	}
+	else if (command == "NOTICE") {
+
+	}
+	else if (command == "QUIT") {
+
+	}
+	else if (command == "KICK") {
+
+	}
+	else if (command == "MODE") {
+
+	}
+	else if (command == "TOPIC") {
+
+	}
+	else if (command == "INVITE") {
+
+	}
+	else if (command == "AWAY") {
+
+	}
+	else {
+		// unknown
 	}
 }

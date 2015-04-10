@@ -23,5 +23,9 @@ void BotMessageListener::onMessage(const std::string& channel, const std::string
 }
 
 void BotMessageListener::onJoinChannel(const std::string& channel, const std::string& sender) {
+	
+}
+
+void BotMessageListener::onPrivateMessage(const std::string& target, const std::string& message, const std::string& sender) {
 
 }
