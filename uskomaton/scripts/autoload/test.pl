@@ -3,7 +3,7 @@ use Uskomaton;
 Uskomaton::register("mita", "helevettia");
 Uskomaton::hookOnMessage(\&test2);
 sub test2 {
-	my ($ctx, $channel) = @_;
+	my ($ctx, $channel, $message, $sender) = @_;
 	Uskomaton::print("from callback");
-	Uskomaton::sendMessage($ctx, $channel, "aamuja :D");
+	Uskomaton::sendMessage($ctx, $channel, "$message wii $sender");
 }

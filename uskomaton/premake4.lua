@@ -3,7 +3,7 @@ solution("uskomaton")
 		flags { "ExtraWarnings"  }
 
 	configuration { "gmake" }
-		buildoptions { "-std=c++11"}
+		buildoptions { "-std=c++11", "-Wno-write-strings" }
 
 	configuration { "linux" }
 		defines { "LINUX "}

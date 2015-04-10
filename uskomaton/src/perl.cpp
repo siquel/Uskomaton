@@ -14,8 +14,8 @@ extern "C" {
 
 class PerlScriptingAPI::_Impl {
 private:
-	Bot* bot;
 	PerlInterpreter* my_perl;
+	Bot* bot;
 public:
 	_Impl() : my_perl(nullptr), bot(nullptr) {
 
@@ -66,7 +66,7 @@ public:
 
 
 PerlScriptingAPI::PerlScriptingAPI() 
-	: pImpl(new PerlScriptingAPI::_Impl()), isInitialized(false) {
+	: isInitialized(false), pImpl(new PerlScriptingAPI::_Impl()) {
 
 }
 
@@ -103,7 +103,6 @@ void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::stri
 	
 }
 
-#pragma region XS
 
 EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
 
@@ -207,29 +206,25 @@ static void xs_init(pTHX) {
 	newXS("Uskomaton::Internal::sendMessage", XS_uskomaton_send_message, __FILE__);
 }
 
-#pragma endregion
-
-#pragma region C binds
-void* uskomaton_perl_new() {
+static void* uskomaton_perl_new() {
 	return PerlScriptingAPI::getInstance();
 }
 
-void uskomaton_perl_register(void* handle, char* name, char* filename) {
+static void uskomaton_perl_register(void* handle, char* name, char* filename) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 
 	api->pImpl->registerPlugin(name, filename);
 }
 
-void uskomaton_perl_hook_server(void* handle, HookData* data) {
+static void uskomaton_perl_hook_server(void* handle, HookData* data) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 	api->pImpl->hooks.push_back(data);
 }
 
-void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message) {
+static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 	api->pImpl->sendMessage(context, channel, message);
 }
-#pragma endregion
 
 // TODO gotta pass context?
 void PerlScriptingAPI::initialize(uskomaton::Bot* bot) {

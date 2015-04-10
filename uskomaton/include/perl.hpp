@@ -16,8 +16,8 @@ namespace uskomaton {
 	namespace scripting {
 		class PerlScriptingAPI : public ScriptingAPI {
 		private:
-			bool isInitialized;
 			PerlScriptingAPI();
+			bool isInitialized;
 		public:
 			class _Impl;
 			std::unique_ptr<_Impl> pImpl;

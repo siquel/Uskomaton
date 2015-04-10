@@ -124,7 +124,6 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	if (target.size() != 0 && target.at(0) == ':') {
 		target = target.substr(1);
 	}
-	std::cout << "sourceraw " << sourceraw << std::endl;
 	// valid IRC line?
 	if (sourceraw.size() != 0 && sourceraw.at(0) != ':') {
 		// TODO unknown line
@@ -202,15 +201,14 @@ void IrcClient::processCommand(const std::string& command, const std::string& ta
 			ss << tokens[i] << " ";
 		}
 	}
-
 	if (ss.str().size() != 0) {
 		message = ss.str();
-		// remove :
-		message = message.substr(1);
+		// remove : and newlines
+		message = message.substr(1, message.size()  - 2);
 	}
 	// CTCP
 	if (command == "PRIVMSG" && message.find('\x0001') == 0  && message.find('\x0001') == message.size() - 1) {
-
+		std::cout << "CTCP VITTU" << std::endl;
 	}
 	// message to channel or to us
 	else if (command == "PRIVMSG" && !target.empty()) {
