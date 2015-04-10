@@ -6,8 +6,8 @@
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
 
-IrcClient::IrcClient(const std::string& nick, const std::string& login)
-	: nick(nick), login(login), socket(ioService){
+IrcClient::IrcClient(const std::string& context, const std::string& nick, const std::string& login)
+	: server(context), nick(nick), login(login), socket(ioService){
 
 }
 
@@ -180,4 +180,8 @@ void IrcClient::terminate() {
 	socket.close();
 	inputThread.join();
 	outputThread.join();
+}
+
+const std::string& IrcClient::getServerName() const {
+	return server;
 }

@@ -59,8 +59,8 @@ public:
 		bot->addCommand(new PerlCallback(name));
 	}
 
-	void sendMessage(const char* channel, const char* message) {
-		bot->sendMessage(channel, message);
+	void sendMessage(const char* context, const char* channel, const char* message) {
+		bot->sendMessage(context, channel, message);
 	}
 };
 
@@ -74,18 +74,22 @@ PerlScriptingAPI::~PerlScriptingAPI() {
 	pImpl->deinitialize();
 }
 
-void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::string& command, const std::string& target) {
+void PerlScriptingAPI::processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) {
 	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
 		HookData* hook = pImpl->hooks[0];
 		if (hook->name == command) {
 			PERL_SET_CONTEXT(pImpl->getPerl());
 			{
 				dSP;
+
 				ENTER;
 				SAVETMPS;
+
 				PUSHMARK(SP);
+				XPUSHs(sv_2mortal(newSVpv(context.c_str(), 0)));
+				XPUSHs(sv_2mortal(newSVpv(target.c_str(), 0)));
 				PUTBACK;
-				call_sv(hook->callback, G_NOARGS | G_DISCARD);
+				call_sv(hook->callback, G_DISCARD);
 				FREETMPS;
 				LEAVE;
 			}
@@ -130,13 +134,15 @@ static int perl_load_file(char* filename) {
 }
 
 XS(XS_uskomaton_send_message) {
+	char* context;
 	char* channel;
 	char* message;
 	dXSARGS;
-	if (items == 2) {
-		channel = SvPV_nolen(ST(0));
-		message = SvPV_nolen(ST(1));
-		uskomaton_perl_send_message(ph, channel, message);
+	if (items == 3) {
+		context = SvPV_nolen(ST(0));
+		channel = SvPV_nolen(ST(1));
+		message = SvPV_nolen(ST(2));
+		uskomaton_perl_send_message(ph, context, channel, message);
 	}
 }
 
@@ -213,9 +219,9 @@ void uskomaton_perl_hook_server(void* handle, HookData* data) {
 	api->pImpl->hooks.push_back(data);
 }
 
-void uskomaton_perl_send_message(void* handle, const char* channel, const char* message) {
+void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
-	api->pImpl->sendMessage(channel, message);
+	api->pImpl->sendMessage(context, channel, message);
 }
 #pragma endregion
 

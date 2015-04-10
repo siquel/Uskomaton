@@ -66,8 +66,8 @@ sub hookServer {
 }
 
 sub sendMessage {
-	return undef unless @_ >= 2;
-	Uskomaton::Internal::sendMessage(shift @_, shift @_);
+	return undef unless @_ >= 3;
+	Uskomaton::Internal::sendMessage(shift @_, shift @_, shift @_);
 }
 
 sub hookOnMessage {

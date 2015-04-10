@@ -4,7 +4,7 @@
 #include <algorithm>
 using namespace uskomaton;
 Bot::Bot(const uskomaton::config::Configuration& conf)
-	: initialized(false), listener(this), config(conf) {
+	: initialized(false), config(conf) {
 		script.push_back(PerlScriptingAPI::getInstance());
 		//client.addListener(&listener);
 }
@@ -25,19 +25,20 @@ Bot::~Bot() {
 void Bot::initialize() {
 	if (initialized) return;
 	commands.reserve(10);
+
+	for (auto& serverConfig : config.getServerConfigs()) {
+		IrcClient* client = new IrcClient(serverConfig.name, serverConfig.username, serverConfig.login);
+		client->addListener(new BotMessageListener(this, serverConfig));
+		clients.push_back(client);
+
+	}
+
 	for (size_t i = 0; i < script.size(); i++) {
 		script[i]->initialize(this);
 		const std::string& autoload = config.getAutoloadPath();
 		if (!autoload.empty()) {
 			script[i]->autoloadFrom(autoload);
 		}
-	}
-
-	for (auto& serverConfig : config.getServerConfigs()) {
-		IrcClient* client = new IrcClient(serverConfig.username, serverConfig.login);
-		client->addListener(&listener);
-		clients.push_back(client);
-		
 	}
 
 	initialized = true;
@@ -51,13 +52,38 @@ const std::vector<ScriptingAPI*>& Bot::getScripts() const {
 	return script;
 }
 
-void Bot::sendMessage(const std::string& channel, const std::string& message) {
-	std::cout << channel << " >> " << message << std::endl;
-	//client.sendMessage(channel, message);
+const uskomaton::config::ServerConfiguration* Bot::getConfigFor(const std::string& name) const {
+	using namespace uskomaton::config;
+	auto configs = this->config.getServerConfigs();
+	for (size_t i = 0; i < configs.size(); i++) {
+		if (configs[i].name == name) return &configs[i];
+	}
+	return nullptr;
 }
 
-void uskomaton::Bot::joinChannel(const std::string& channel) {
-	//client.sendJoinChannel(channel);
+IrcClient* Bot::getClientFor(const std::string& name) const {
+	using namespace uskomaton::config;
+	
+	for (size_t i = 0; i < clients.size(); i++) {
+		IrcClient* client = clients[i];
+		if (client->getServerName() == name) {
+			return client;
+		}
+	}
+	return nullptr;
+}
+
+void Bot::sendMessage(const std::string& context, const std::string& channel, const std::string& message) {
+	std::cout << context << " " <<  channel << " >> " << message << std::endl;
+	IrcClient* client = getClientFor(context);
+	assert(client != nullptr);
+	client->sendMessage(channel, message);
+}
+
+void uskomaton::Bot::joinChannel(const std::string& context, const std::string& channel) {
+	IrcClient* client = getClientFor(context);
+	assert(client != nullptr);
+	client->sendJoinChannel(channel);
 }
 
 void uskomaton::Bot::terminate() {

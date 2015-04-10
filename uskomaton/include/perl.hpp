@@ -24,7 +24,7 @@ namespace uskomaton {
 			~PerlScriptingAPI();
 			void initialize(uskomaton::Bot* bot);
 			static PerlScriptingAPI* getInstance();
-			void processRawMessage(const std::string& raw, const std::string& command, const std::string& target);
+			void processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target);
 			void autoloadFrom(const std::string& path);
 		};
 	}
@@ -33,6 +33,6 @@ namespace uskomaton {
 extern "C" {
 	static void uskomaton_perl_register(void* handle, char* name, char* filename);
 	static void uskomaton_perl_hook_server(void* handle, HookData* data);
-	static void uskomaton_perl_send_message(void* handle, const char* channel, const char* message);
+	static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message);
 	static void* uskomaton_perl_new();
 }
