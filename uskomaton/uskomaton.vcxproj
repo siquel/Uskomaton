@@ -74,6 +74,7 @@
     <ClCompile Include="src\irc\ircclient.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\perl.cpp" />
+    <ClCompile Include="src\script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.hpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="include\irc\color.hpp" />
     <ClInclude Include="include\irc\ircclient.hpp" />
     <ClInclude Include="include\perl.hpp" />
+    <ClInclude Include="include\script.hpp" />
     <ClInclude Include="include\scripting.hpp" />
     <ClInclude Include="include\util.hpp" />
   </ItemGroup>

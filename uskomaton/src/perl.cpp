@@ -14,16 +14,18 @@ extern "C" {
 
 class PerlScriptingAPI::_Impl {
 private:
+	PerlScriptingAPI* api;
 	PerlInterpreter* my_perl;
 	Bot* bot;
 public:
-	_Impl() : my_perl(nullptr), bot(nullptr) {
+	_Impl(PerlScriptingAPI* api) : api(api), my_perl(nullptr), bot(nullptr) {
 
 	}
 	std::vector<HookData*> hooks;
 	PerlInterpreter* getPerl() const {
 		return my_perl;
 	}
+
 	void initialize(uskomaton::Bot* bot) {
 		this->bot = bot;
 		char *perl_args[] = { "", "-e", "0", "-w" };
@@ -55,8 +57,20 @@ public:
 
 	void registerPlugin(const char* name, const char* filename) {
 		std::cout << name << std::endl << filename << std::endl;
-		
-		bot->addCommand(new PerlCallback(name));
+		api->loadedScripts.push_back(new Script(filename, name));
+	}
+
+	void hookCommand(const char* filename, const HookData* data) {
+		Script* script = getScript(filename);
+		assert(script != nullptr);
+	}
+
+	Script* getScript(const char* filename) {
+		for (size_t i = 0; i < api->loadedScripts.size(); i++) {
+			if (api->loadedScripts[i]->getFilename() == filename)
+				return api->loadedScripts[i];
+		}
+		return nullptr;
 	}
 
 	void sendMessage(const char* context, const char* channel, const char* message) {
@@ -66,7 +80,7 @@ public:
 
 
 PerlScriptingAPI::PerlScriptingAPI() 
-	: isInitialized(false), pImpl(new PerlScriptingAPI::_Impl()) {
+	: isInitialized(false), pImpl(new PerlScriptingAPI::_Impl(this)) {
 
 }
 
@@ -255,6 +269,27 @@ XS(XS_uskomaton_part_channel) {
 	}
 }
 
+XS(XS_uskomaton_hook_command) {
+	char* filename;
+	char* name;
+	SV* package;
+	SV* callback;
+	HookData* data;
+	dXSARGS;
+	if (items == 4) {
+		filename = SvPV_nolen(ST(0));
+		name = SvPV_nolen(ST(1));
+		package = ST(2);
+		callback = ST(3);
+		data = new HookData;
+		data->callback = newSVsv(callback);
+		data->package = newSVsv(package);
+		data->name = std::string(name);
+		uskomaton_perl_hook_command(ph, filename, data);
+
+	}
+}
+
 static void xs_init(pTHX) {
 	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, __FILE__);
 	newXS("Uskomaton::Internal::register", XS_uskomaton_register, __FILE__);
@@ -263,6 +298,7 @@ static void xs_init(pTHX) {
 	newXS("Uskomaton::Internal::sendMessage", XS_uskomaton_send_message, __FILE__);
 	newXS("Uskomaton::Internal::joinChannel", XS_uskomaton_join_channel, __FILE__);
 	newXS("Uskomaton::Internal::partChannel", XS_uskomaton_part_channel, __FILE__);
+	newXS("Uskomaton::Internal::hookCommand", XS_uskomaton_hook_command, __FILE__);
 
 	newXS("Uskomaton::Irc::getChannels", XS_uskomaton_get_channels, __FILE__);
 	newXS("Uskomaton::Irc::getNick", XS_uskomaton_get_nick, __FILE__);
@@ -286,6 +322,11 @@ static void uskomaton_perl_hook_server(void* handle, HookData* data) {
 static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 	api->pImpl->sendMessage(context, channel, message);
+}
+
+static void uskomaton_perl_hook_command(void* handle, const char* filename, HookData* data) {
+	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
+	api->pImpl->hookCommand(filename, data);
 }
 
 // TODO gotta pass context?
