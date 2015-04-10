@@ -21,3 +21,7 @@ void BotMessageListener::onMessage(const std::string& channel, const std::string
 		api->processOnMessage(context, channel, message, sender);
 	});
 }
+
+void BotMessageListener::onJoinChannel(const std::string& channel, const std::string& sender) {
+
+}

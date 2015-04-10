@@ -6,6 +6,7 @@
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
 void IrcMessageListener::onMessage(const std::string& channel, const std::string& message, const std::string& sender) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
+void IrcMessageListener::onJoinChannel(const std::string& channel, const std::string& sender) {}
 
 using namespace uskomaton::irc;
 
@@ -124,9 +125,12 @@ void IrcClient::onRawMessage(const std::string& raw) {
 		// TODO unknown line
 		return;
 	}
+
+	std::string userhostmask[3];
+	uskomaton::util::userHostmaskFromRawLine(userhostmask, sourceraw.substr(1));
 	
 	// TODO parse users etc
-	processCommand(command, target, tokens);
+	processCommand(command, target, userhostmask[0], tokens);
 	notifyListeners([&raw, &command, &target](IrcMessageListener* listener) {
 		listener->onRawMessage(raw, command, target);
 	});
@@ -183,7 +187,7 @@ const std::string& IrcClient::getServerName() const {
 	return server;
 }
 
-void IrcClient::processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens) {
+void IrcClient::processCommand(const std::string& command, const std::string& target, std::string& sender, std::vector<std::string>& tokens) {
 	std::stringstream ss;
 	std::string message;
 	// remove target TODO may not be the best idea
@@ -207,8 +211,8 @@ void IrcClient::processCommand(const std::string& command, const std::string& ta
 	}
 	// message to channel or to us
 	else if (command == "PRIVMSG" && !target.empty()) {
-		notifyListeners([&target, &message](IrcMessageListener* listener) {
-			listener->onMessage(target, message, "sender_todo");
+		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {
+			listener->onMessage(target, message, sender);
 		});
 	}
 }
