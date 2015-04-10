@@ -80,6 +80,8 @@
     <ClInclude Include="include\command.hpp" />
     <ClInclude Include="include\conf\config.hpp" />
     <ClInclude Include="include\irc\botmsglistener.hpp" />
+    <ClInclude Include="include\irc\channel.hpp" />
+    <ClInclude Include="include\irc\color.hpp" />
     <ClInclude Include="include\irc\ircclient.hpp" />
     <ClInclude Include="include\perl.hpp" />
     <ClInclude Include="include\scripting.hpp" />

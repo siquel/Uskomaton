@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\irc">
+      <UniqueIdentifier>{10c882e6-15de-4455-b18c-bc6d5fb1c0ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -50,9 +53,6 @@
     <ClInclude Include="include\perl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\irc\ircclient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\irc\botmsglistener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -61,6 +61,15 @@
     </ClInclude>
     <ClInclude Include="include\conf\config.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\irc\ircclient.hpp">
+      <Filter>Header Files\irc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\irc\channel.hpp">
+      <Filter>Header Files\irc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\irc\color.hpp">
+      <Filter>Header Files\irc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@ void IrcMessageListener::onRawMessage(const std::string& msg, const std::string&
 void IrcMessageListener::onMessage(const std::string& channel, const std::string& message, const std::string& sender) {}
 void IrcMessageListener::onServerPing(const std::string& ping) {}
 
+using namespace uskomaton::irc;
+
 IrcClient::IrcClient(const std::string& context, const std::string& nick, const std::string& login)
 	: server(context), nick(nick), login(login), socket(ioService){
 
@@ -88,13 +90,6 @@ void IrcClient::connectTo(const std::string& hostname, int port) {
 }
 void IrcClient::connectTo(const std::string& hostname) {
 	connectTo(hostname, 6667, "");
-}
-
-void IrcClient::start() {
-	size_t i = 0;
-	while (i++ < 10) {
-		onRawMessage(":Macha!~macha@unaffiliated/macha PRIVMSG #botwar :Test response\r\n");
-	}
 }
 
 void IrcClient::onRawMessage(const std::string& raw) {

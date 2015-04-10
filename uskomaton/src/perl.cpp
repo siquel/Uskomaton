@@ -149,6 +149,9 @@ XS(XS_uskomaton_send_message) {
 		message = SvPV_nolen(ST(2));
 		uskomaton_perl_send_message(ph, context, channel, message);
 	}
+	else {
+		std::cout << "Usage: Uskomaton::Internal::sendMessage($context, $channel, $message)" << std::endl;
+	}
 }
 
 XS (XS_uskomaton_register) {
@@ -162,10 +165,8 @@ XS (XS_uskomaton_register) {
 		uskomaton_perl_register(ph, name, filename);
 		// loaded
 		XSRETURN_IV(1);
-		
-		
 	} else {
-		return;
+		std::cout << "Usage: Uskomaton::Internal::register($name, $filename)" << std::endl;
 	}
 
 
@@ -177,6 +178,9 @@ XS(XS_uskomaton_print) {
 	if (items == 1) {
 		str = SvPV_nolen(ST(0));
 		std::cout << str;
+	}
+	else {
+		std::cout << "Usage: Uskomaton::Internal::print($str)" << std::endl;
 	}
 }
 
@@ -196,6 +200,59 @@ XS(XS_uskomaton_hook_server) {
 		hookdata->name = std::string(message);
 		uskomaton_perl_hook_server(ph, hookdata);
 	}
+	else {
+		std::cout << "Usage: Uskomaton::Internal::hookServer($message, $callback, $package)" << std::endl;
+	}
+}
+
+XS(XS_uskomaton_get_channels) {
+	char* context;
+	dXSARGS;
+	if (items == 1) {
+		context = SvPV_nolen(ST(0));
+	}
+	else {
+		std::cout << "Usage: Uskomaton::Irc::getChannels($context)" << std::endl;
+	}
+}
+
+XS(XS_uskomaton_get_nick) {
+	char* context;
+	dXSARGS;
+	if (items == 1) {
+		context = SvPV_nolen(ST(0));
+	}
+	else {
+		std::cout << "Usage: Uskomaton::Irc::getNick($context)" << std::endl;
+	}
+}
+
+XS(XS_uskomaton_join_channel) {
+	char* context;
+	char* channel;
+	char* password;
+	dXSARGS;
+	if (items == 3) {
+		context = SvPV_nolen(ST(0));
+		channel = SvPV_nolen(ST(1));
+		password = SvPV_nolen(ST(2));
+	}
+	else {
+		std::cout << "Usage: Uskomaton::Irc::joinChannel($context, $channel, $password)" << std::endl;
+	}
+}
+
+XS(XS_uskomaton_part_channel) {
+	char* context;
+	char* channel;
+	dXSARGS;
+	if (items == 2) {
+		context = SvPV_nolen(ST(0));
+		channel = SvPV_nolen(ST(1));
+	}
+	else {
+		std::cout << "Usage: Uskomaton::Irc::partChannel($context, $channel)" << std::endl;
+	}
 }
 
 static void xs_init(pTHX) {
@@ -204,6 +261,11 @@ static void xs_init(pTHX) {
 	newXS("Uskomaton::Internal::print", XS_uskomaton_print, __FILE__);
 	newXS("Uskomaton::Internal::hookServer", XS_uskomaton_hook_server, __FILE__);
 	newXS("Uskomaton::Internal::sendMessage", XS_uskomaton_send_message, __FILE__);
+	newXS("Uskomaton::Internal::joinChannel", XS_uskomaton_join_channel, __FILE__);
+	newXS("Uskomaton::Internal::partChannel", XS_uskomaton_part_channel, __FILE__);
+
+	newXS("Uskomaton::Irc::getChannels", XS_uskomaton_get_channels, __FILE__);
+	newXS("Uskomaton::Irc::getNick", XS_uskomaton_get_nick, __FILE__);
 }
 
 static void* uskomaton_perl_new() {

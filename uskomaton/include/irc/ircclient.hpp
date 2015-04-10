@@ -14,44 +14,46 @@ public:
 	virtual void onMessage(const std::string& channel, const std::string& message, const std::string& sender);
 	virtual void onServerPing(const std::string& ping);
 };
+namespace uskomaton {
+	namespace irc {
 
-typedef std::function<void(IrcMessageListener*)> notification_t;
+		typedef std::function<void(IrcMessageListener*)> notification_t;
 
-class IrcClient {
-private:
-	std::vector<IrcMessageListener*> listeners;
-	void onRawMessage(const std::string& msg);
-	void onServerPing(const std::string& ping);
-	void notifyListeners(notification_t what);
-	void receive(boost::system::error_code const&, size_t);
-	void read();
-	void processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens);
-	std::string login;
-	std::string nick;
-	std::string server;
+		class IrcClient {
+		private:
+			std::vector<IrcMessageListener*> listeners;
+			void onRawMessage(const std::string& msg);
+			void onServerPing(const std::string& ping);
+			void notifyListeners(notification_t what);
+			void receive(boost::system::error_code const&, size_t);
+			void read();
+			void processCommand(const std::string& command, const std::string& target, std::vector<std::string>& tokens);
+			std::string login;
+			std::string nick;
+			std::string server;
 
-	boost::asio::io_service ioService;
-	boost::asio::streambuf buffer;
-	boost::asio::ip::tcp::socket socket;
+			boost::asio::io_service ioService;
+			boost::asio::streambuf buffer;
+			boost::asio::ip::tcp::socket socket;
 
-	boost::thread inputThread;
-	boost::thread outputThread;
+			boost::thread inputThread;
+			boost::thread outputThread;
 
-public:
-	IrcClient(const std::string& context, const std::string& nick, const std::string& login);
-	~IrcClient();
-	const std::string& getServerName() const;
-	void addListener(IrcMessageListener* listener);
-	void connectTo(const std::string& hostname, int port, const std::string& password);
-	void connectTo(const std::string& hostname, int port);
-	void connectTo(const std::string& hostname);
-	void sendMessage(const std::string& channel, const std::string& message);
-	void sendRawMessage(const std::string& line);
-	void sendNick(const std::string& nick);
-	void sendUser(const std::string& login);
-	void sendJoinChannel(const std::string& channel, const std::string& password = "");
-	void sendPartChannel(const std::string& channel);
-	// debug
-	void start();
-	void terminate();
-};
+		public:
+			IrcClient(const std::string& context, const std::string& nick, const std::string& login);
+			~IrcClient();
+			const std::string& getServerName() const;
+			void addListener(IrcMessageListener* listener);
+			void connectTo(const std::string& hostname, int port, const std::string& password);
+			void connectTo(const std::string& hostname, int port);
+			void connectTo(const std::string& hostname);
+			void sendMessage(const std::string& channel, const std::string& message);
+			void sendRawMessage(const std::string& line);
+			void sendNick(const std::string& nick);
+			void sendUser(const std::string& login);
+			void sendJoinChannel(const std::string& channel, const std::string& password = "");
+			void sendPartChannel(const std::string& channel);
+			void terminate();
+		};
+	}
+}
