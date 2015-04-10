@@ -121,12 +121,12 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	}
 
 	std::string target = (tokens.empty() ? "" : tokens[0]);
-	if (target.at(0) == ':') {
+	if (target.size() != 0 && target.at(0) == ':') {
 		target = target.substr(1);
 	}
-
+	std::cout << "sourceraw " << sourceraw << std::endl;
 	// valid IRC line?
-	if (sourceraw.at(0) != ':') {
+	if (sourceraw.size() != 0 && sourceraw.at(0) != ':') {
 		// TODO unknown line
 		return;
 	}
@@ -195,7 +195,7 @@ void IrcClient::processCommand(const std::string& command, const std::string& ta
 	std::for_each(tokens.begin(), tokens.end(), [&ss](std::string& s) {
 		ss << s << " ";
 	});
-	if (!ss.str().empty()) {
+	if (ss.str().size() != 0) {
 		message = ss.str().substr(0, ss.str().size() - 1);
 	}
 	// CTCP
