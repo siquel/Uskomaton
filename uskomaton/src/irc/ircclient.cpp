@@ -127,7 +127,8 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	}
 
 	std::string userhostmask[3];
-	uskomaton::util::userHostmaskFromRawLine(userhostmask, sourceraw.substr(1));
+	sourceraw = sourceraw.substr(1);
+	uskomaton::util::userHostmaskFromRawLine(userhostmask, sourceraw);
 	
 	// TODO parse users etc
 	processCommand(command, target, userhostmask[0], tokens);
