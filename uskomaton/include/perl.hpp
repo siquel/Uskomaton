@@ -29,6 +29,7 @@ namespace uskomaton {
 			void processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) override;
 			void processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) override;
 			void autoloadFrom(const std::string& path);
+			const std::vector<Script*> getScripts() const;
 		};
 	}
 

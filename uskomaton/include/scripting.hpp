@@ -1,5 +1,5 @@
 #pragma once
-
+#include "script.hpp"
 namespace uskomaton {
 	class Bot;
 	namespace scripting {
@@ -11,6 +11,7 @@ namespace uskomaton {
 			virtual void processRawMessage(const std::string& raw, const std::string& context, const std::string& command, const std::string& target) = 0;
 			virtual void processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) = 0;
 			virtual void autoloadFrom(const std::string& path) = 0;
+			virtual const std::vector<Script*> getScripts() const = 0;
 		};
 	}
 }

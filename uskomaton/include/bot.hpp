@@ -8,7 +8,9 @@
 #include "conf/config.hpp"
 
 namespace uskomaton {
-	class Command;
+	namespace command {
+		class Command;
+	}
 	using namespace uskomaton::scripting;
 	using namespace uskomaton::irc;
 	class Bot {
@@ -16,7 +18,7 @@ namespace uskomaton {
 		Bot(const uskomaton::config::Configuration& conf);
 		~Bot();
 		void initialize();
-		void addCommand(Command* command);
+		void addCommand(command::Command* command);
 		const std::vector<ScriptingAPI*>& getScripts() const;
 		void connectServers();
 		void sendMessage(const std::string& context, const std::string& channel, const std::string& message);
@@ -30,7 +32,7 @@ namespace uskomaton {
 		bool initialized;
 		std::vector<IrcClient*> clients;
 		std::map<std::string, std::vector<Channel>> channels;
-		std::vector<uskomaton::Command*> commands;
+		std::vector<command::Command*> commands;
 		std::vector<ScriptingAPI*> script;
 	};
 }

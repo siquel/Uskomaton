@@ -3,7 +3,7 @@
 #include "bot.hpp"
 #include <algorithm>
 BotMessageListener::BotMessageListener(uskomaton::Bot* bot, const uskomaton::config::ServerConfiguration& config)
-	: bot(bot), config(config) {
+	: bot(bot), config(config), commandInterface(bot, "!") {
 
 }
 
@@ -20,6 +20,7 @@ void BotMessageListener::onMessage(const std::string& channel, const std::string
 	std::for_each(bot->getScripts().begin(), bot->getScripts().end(), [&channel, &message, &sender, &context](uskomaton::scripting::ScriptingAPI* api) {
 		api->processOnMessage(context, channel, message, sender);
 	});
+	commandInterface.processLine(context, channel, message, sender);
 }
 
 void BotMessageListener::onJoinChannel(const std::string& channel, const std::string& sender) {

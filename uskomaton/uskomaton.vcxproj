@@ -43,7 +43,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\boost\boost_1_57_0;./include;C:\perl\lib\CORE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\boost_1_56_0\boost_1_56_0;C:\boost\boost_1_57_0;./include;C:\perl\lib\CORE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -69,6 +69,8 @@
   <ItemGroup>
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\command.cpp" />
+    <ClCompile Include="src\command\commandinterface.cpp" />
+    <ClCompile Include="src\command\scriptcommand.cpp" />
     <ClCompile Include="src\conf\config.cpp" />
     <ClCompile Include="src\irc\botmsglistener.cpp" />
     <ClCompile Include="src\irc\ircclient.cpp" />
@@ -79,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="include\bot.hpp" />
     <ClInclude Include="include\command.hpp" />
+    <ClInclude Include="include\command\commandinterface.hpp" />
     <ClInclude Include="include\conf\config.hpp" />
     <ClInclude Include="include\irc\botmsglistener.hpp" />
     <ClInclude Include="include\irc\channel.hpp" />

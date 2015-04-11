@@ -1,14 +1,13 @@
 #include "command.hpp"
-using namespace uskomaton;
+using namespace uskomaton::command;
 Command::Command(const std::string& name) : name(name) {
 
 }
 
-
-PerlCallback::PerlCallback(const std::string& name) : Command(name) {
+Command::~Command() {
 
 }
 
-void PerlCallback::handleLine(Bot& bot, const std::string& channel, const std::string& sender) {
-
+const std::string& Command::getName() const {
+	return name;
 }

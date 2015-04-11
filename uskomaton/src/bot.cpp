@@ -44,7 +44,7 @@ void Bot::initialize() {
 	initialized = true;
 }
 
-void Bot::addCommand(uskomaton::Command* command) {
+void Bot::addCommand(uskomaton::command::Command* command) {
 	commands.push_back(command);
 }
 

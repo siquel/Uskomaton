@@ -16,15 +16,24 @@
     <Filter Include="Header Files\irc">
       <UniqueIdentifier>{10c882e6-15de-4455-b18c-bc6d5fb1c0ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\script">
+      <UniqueIdentifier>{c6d14833-47a9-4591-8992-c1feb9f0cb57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\script">
+      <UniqueIdentifier>{78822c47-076c-4a5e-9987-9c2dfcf39934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\command">
+      <UniqueIdentifier>{f42688a1-6ebd-4aae-bd66-1ce636cf2fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\command">
+      <UniqueIdentifier>{2a748b60-ec8b-4820-a1b2-7720cd931a64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\bot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\perl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\command.cpp">
@@ -39,21 +48,21 @@
     <ClCompile Include="src\conf\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\perl.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
     <ClCompile Include="src\script.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\commandinterface.cpp">
+      <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\scriptcommand.cpp">
+      <Filter>Source Files\command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\command.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\bot.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\scripting.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\perl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\irc\botmsglistener.hpp">
@@ -74,8 +83,20 @@
     <ClInclude Include="include\irc\color.hpp">
       <Filter>Header Files\irc</Filter>
     </ClInclude>
+    <ClInclude Include="include\scripting.hpp">
+      <Filter>Header Files\script</Filter>
+    </ClInclude>
     <ClInclude Include="include\script.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\script</Filter>
+    </ClInclude>
+    <ClInclude Include="include\perl.hpp">
+      <Filter>Header Files\script</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\commandinterface.hpp">
+      <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command.hpp">
+      <Filter>Header Files\command</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

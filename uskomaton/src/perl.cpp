@@ -1,3 +1,4 @@
+#include "bot.hpp"
 #include "command.hpp"
 #include "boost/filesystem.hpp"
 #include "perl.hpp"
@@ -361,4 +362,8 @@ void uskomaton::scripting::PerlScriptingAPI::autoloadFrom(const std::string& pat
 	else {
 		std::cout << path << " doesn't exist or isn't a directory" << std::endl;
 	}
+}
+
+const std::vector<uskomaton::scripting::Script*> uskomaton::scripting::PerlScriptingAPI::getScripts() const {
+	return loadedScripts;
 }
