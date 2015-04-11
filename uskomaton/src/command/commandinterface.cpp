@@ -15,7 +15,7 @@ void CommandInterface::processLine(const std::string& context, const std::string
 	std::string parsedMessage(message.substr(prefix.size()));
 	int space = 0;
 	if ((space = parsedMessage.find(" ")) == std::string::npos) {
-		space = parsedMessage.size() - 1;
+		space = parsedMessage.size();
 	}
 	std::string name(parsedMessage.substr(0, space));
 	using namespace uskomaton::scripting;

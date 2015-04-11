@@ -7,7 +7,7 @@
 // TODO this may not be the greatest idea...
 static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
-
+using namespace uskomaton::command;
 extern "C" {
 	static void xs_init(pTHX);
 	static int perl_load_file(char* filename);
@@ -64,6 +64,7 @@ public:
 	void hookCommand(const char* filename, const HookData* data) {
 		Script* script = getScript(filename);
 		assert(script != nullptr);
+		script->hookCommand(new PerlScriptCommand(data));
 	}
 
 	Script* getScript(const char* filename) {
@@ -93,23 +94,7 @@ void PerlScriptingAPI::processOnMessage(const std::string& context, const std::s
 	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
 		HookData* hook = pImpl->hooks[0];
 		if (hook->name == "PRIVMSG") {
-			PERL_SET_CONTEXT(pImpl->getPerl());
-			{
-				dSP;
-
-				ENTER;
-				SAVETMPS;
-
-				PUSHMARK(SP);
-				XPUSHs(sv_2mortal(newSVpv(context.c_str(), 0)));
-				XPUSHs(sv_2mortal(newSVpv(channel.c_str(), 0)));
-				XPUSHs(sv_2mortal(newSVpv(message.c_str(), 0)));
-				XPUSHs(sv_2mortal(newSVpv(sender.c_str(), 0)));
-				PUTBACK;
-				call_sv(hook->callback, G_DISCARD);
-				FREETMPS;
-				LEAVE;
-			}
+			executeHookWithArguments(hook, 4, context.c_str(), channel.c_str(), message.c_str(), sender.c_str());
 		}
 	}
 }
@@ -366,4 +351,32 @@ void uskomaton::scripting::PerlScriptingAPI::autoloadFrom(const std::string& pat
 
 const std::vector<uskomaton::scripting::Script*> uskomaton::scripting::PerlScriptingAPI::getScripts() const {
 	return loadedScripts;
+}
+
+void PerlScriptingAPI::executeHookWithArguments(const HookData* hook, int argc, ...) {
+	// TODO 
+	assert(argc > 0);
+	std::vector<char*> arguments;
+	va_list vl;
+	va_start(vl, argc);
+	for (int i = 0; i < argc; i++) {
+		arguments.push_back(va_arg(vl, char*));
+	}
+	va_end(vl);
+	PERL_SET_CONTEXT(pImpl->getPerl());
+	{
+		dSP;
+
+		ENTER;
+		SAVETMPS;
+
+		PUSHMARK(SP);
+		for (size_t i = 0; i < arguments.size(); i++) {
+			XPUSHs(sv_2mortal(newSVpv(arguments[i], 0)));
+		}
+		PUTBACK;
+		call_sv(hook->callback, G_DISCARD);
+		FREETMPS;
+		LEAVE;
+	}
 }

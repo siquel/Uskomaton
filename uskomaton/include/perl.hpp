@@ -30,6 +30,17 @@ namespace uskomaton {
 			void processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) override;
 			void autoloadFrom(const std::string& path);
 			const std::vector<Script*> getScripts() const;
+			void executeHookWithArguments(const HookData* hook, int argcount, ...);
+		};
+	}
+	namespace command {
+		class ScriptCommand;
+		class PerlScriptCommand : public ScriptCommand {
+		public:
+			PerlScriptCommand(const HookData* data);
+			void handleLine(uskomaton::Bot& bot, const std::string& context, const std::string& channel, const std::string& message, const std::string& sender);
+		private:
+			const HookData* data;
 		};
 	}
 

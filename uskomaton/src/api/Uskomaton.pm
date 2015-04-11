@@ -22,6 +22,22 @@ sub register {
 	$pkgInfo->{loaded} = Uskomaton::Internal::register($name, $filename);
 }
 
+sub hookCommand {
+	my ($name, $callback) = @_;
+	my $pkg = findPackage();
+	my $pkgInfo = packageInfo($pkg);
+	unless (defined $pkgInfo->{loaded}) {
+		Uskomaton::print("Script isn't registerered!");
+		die "Script isn't registerered!";
+	}
+	my $filename = $pkgInfo->{filename};
+	unless (ref $callback) {
+		Uskomaton::print("callback isn't reference!");
+		die "callback isn't reference!";
+	}
+	Uskomaton::Internal::hookCommand($filename, $name, $pkg, $callback);
+}
+
 sub load {
 	my $file = shift @_;
 	print $file;

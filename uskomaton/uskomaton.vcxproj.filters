@@ -60,6 +60,9 @@
     <ClCompile Include="src\command\scriptcommand.cpp">
       <Filter>Source Files\command</Filter>
     </ClCompile>
+    <ClCompile Include="src\command\perlcommand.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.hpp">
