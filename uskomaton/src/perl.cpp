@@ -92,7 +92,7 @@ PerlScriptingAPI::~PerlScriptingAPI() {
 
 void PerlScriptingAPI::processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) {
 	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
-		HookData* hook = pImpl->hooks[0];
+		HookData* hook = pImpl->hooks[i];
 		if (hook->name == "PRIVMSG") {
 			executeHookWithArguments(hook, 4, context.c_str(), channel.c_str(), message.c_str(), sender.c_str());
 		}
