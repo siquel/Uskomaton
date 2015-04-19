@@ -1,6 +1,7 @@
 #include "script.hpp"
 #include "command.hpp"
 using namespace uskomaton::scripting;
+using namespace uskomaton::command::hook;
 
 Script::Script(const std::string& filename, const std::string& name) 
 	: filename(filename), name(name) {
@@ -28,4 +29,16 @@ uskomaton::command::ScriptCommand* uskomaton::scripting::Script::getCommandByNam
 		if (commands[i]->getName() == name) return commands[i];
 	}
 	return nullptr;
+}
+
+const std::vector<uskomaton::command::hook::ServerHook*>& uskomaton::scripting::Script::getServerHooks() const {
+	return serverHooks;
+}
+
+void uskomaton::scripting::Script::hookServer(command::hook::ServerHook* hook) {
+	serverHooks.push_back(hook);
+}
+
+ServerHook::ServerHook(const std::string& message) : message(message) {
+
 }

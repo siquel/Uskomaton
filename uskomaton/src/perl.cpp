@@ -7,6 +7,7 @@
 static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
 using namespace uskomaton::command;
+using namespace uskomaton::command::hook;
 extern "C" {
 	static void xs_init(pTHX);
 	static int perl_load_file(char* filename);
@@ -21,7 +22,6 @@ public:
 	_Impl(PerlScriptingAPI* api) : api(api), my_perl(nullptr), bot(nullptr) {
 
 	}
-	std::vector<HookData*> hooks;
 	PerlInterpreter* getPerl() const {
 		return my_perl;
 	}
@@ -60,6 +60,12 @@ public:
 		api->loadedScripts.push_back(new Script(filename, name));
 	}
 
+	void hookServer(const char* filename, HookData* data) {
+		Script* script = getScript(filename);
+		assert(script != nullptr);
+		script->hookServer(new PerlServerHook(data));
+	}
+
 	void hookCommand(const char* filename, const HookData* data) {
 		Script* script = getScript(filename);
 		assert(script != nullptr);
@@ -90,11 +96,14 @@ PerlScriptingAPI::~PerlScriptingAPI() {
 }
 
 void PerlScriptingAPI::processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) {
-	for (size_t i = 0; i < pImpl->hooks.size(); i++) {
-		HookData* hook = pImpl->hooks[i];
-		if (hook->name == "PRIVMSG") {
-			executeHookWithArguments(hook, 4, context.c_str(), channel.c_str(), message.c_str(), sender.c_str());
-		}
+	std::vector<const HookData*> hooks;
+	getServerHooks([](ServerHook* hook) {
+		return hook->getMessage() == "PRIVMSG";
+	}, hooks);
+
+	for (size_t i = 0; i < hooks.size(); i++) {
+		const HookData* hook = hooks[i];
+		executeHookWithArguments(hook, 4, context.c_str(), channel.c_str(), message.c_str(), sender.c_str());
 	}
 }
 
@@ -184,24 +193,26 @@ XS(XS_uskomaton_print) {
 }
 
 XS(XS_uskomaton_hook_server) {
+	char* filename;
 	char* message;
 	SV* callback;
 	SV* package;
 	HookData* hookdata = nullptr;
 	dXSARGS;
-	if (items == 3) {
-		message = SvPV_nolen(ST(0));
-		callback = ST(1);
-		package = ST(2);
+	if (items == 4) {
+		filename = SvPV_nolen(ST(0));
+		message = SvPV_nolen(ST(1));
+		callback = ST(2);
+		package = ST(3);
 		hookdata = new HookData;
 		hookdata->callback = newSVsv(callback);
 		hookdata->package = newSVsv(package);
 		hookdata->name = std::string(message);
-		uskomaton_perl_hook_server(ph, hookdata);
+		uskomaton_perl_hook_server(ph, filename, hookdata);
 		XSRETURN_IV(PTR2IV(hookdata));
 	}
 	else {
-		std::cout << "Usage: Uskomaton::Internal::hookServer($message, $callback, $package)" << std::endl;
+		std::cout << "Usage: Uskomaton::Internal::hookServer($filename, $message, $callback, $package)" << std::endl;
 	}
 }
 
@@ -281,6 +292,15 @@ XS(XS_uskomaton_unhook) {
 	dXSARGS;
 	if (items == 1) {
 		data = INT2PTR(HookData*, SvUV(ST(0)));
+		if (data != NULL) {
+			if (data->callback != NULL) {
+				SvREFCNT_dec(data->callback);
+			}
+			if (data->package != NULL) {
+				SvREFCNT_dec(data->package);
+			}
+			delete data;
+		}
 
 	}
 	XSRETURN_EMPTY;
@@ -311,9 +331,9 @@ static void uskomaton_perl_register(void* handle, char* name, char* filename) {
 	api->pImpl->registerPlugin(name, filename);
 }
 
-static void uskomaton_perl_hook_server(void* handle, HookData* data) {
+static void uskomaton_perl_hook_server(void* handle, const char* filename, HookData* data) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
-	api->pImpl->hooks.push_back(data);
+	api->pImpl->hookServer(filename, data);
 }
 
 static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message) {
@@ -370,6 +390,20 @@ void uskomaton::scripting::PerlScriptingAPI::unload(Script* s) {
 	strcpy(file, cfile);
 	execute_perl(sv_2mortal(newSVpv("Uskomaton::unload", 0)), file);
 	// TODO remove script
+	loadedScripts.erase(std::find(loadedScripts.begin(), loadedScripts.end(), s));
+	delete s;
+}
+
+void uskomaton::scripting::PerlScriptingAPI::getServerHooks(PerlScriptingHookPredicate pred, std::vector<const HookData*>& to) {
+	for (size_t i = 0; i < loadedScripts.size(); i++) {
+		auto hooks = loadedScripts[i]->getServerHooks();
+		for (size_t j = 0; j < hooks.size(); j++) {
+			ServerHook* hook = hooks[j];
+			if (pred(hook)) {
+				to.push_back(static_cast<PerlServerHook*>(hook)->getData());
+			}
+		}
+	}
 }
 
 Script* PerlScriptingAPI::getScript(ScriptPredicate pred) const {

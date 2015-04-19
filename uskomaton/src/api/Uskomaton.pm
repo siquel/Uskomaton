@@ -115,7 +115,7 @@ sub hookServer {
 	}
 	my $package = findPackage();
 	my $info = packageInfo($package);
-	my $hook = Uskomaton::Internal::hookServer($message, $callback, $package);
+	my $hook = Uskomaton::Internal::hookServer($info->{filename}, $message, $callback, $package);
 	push @{$info->{hooks}}, $hook if defined $hook;
 }
 

@@ -15,11 +15,13 @@ typedef struct HookData {
 namespace uskomaton {
 	class Bot;
 	namespace scripting {
+		typedef std::function<int(uskomaton::command::hook::ServerHook* hook)> PerlScriptingHookPredicate;
 		class PerlScriptingAPI : public ScriptingAPI {
 		private:
 			PerlScriptingAPI();
 			bool isInitialized;
 			std::vector<Script*> loadedScripts;
+			void getServerHooks(PerlScriptingHookPredicate pred, std::vector<const HookData*>& to);
 		public:
 			class _Impl;
 			std::unique_ptr<_Impl> pImpl;
@@ -44,12 +46,22 @@ namespace uskomaton {
 		private:
 			const HookData* data;
 		};
+		namespace hook {
+			class PerlServerHook : public uskomaton::command::hook::ServerHook {
+			public:
+				PerlServerHook(const HookData* data);
+				//void executeHook(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender);
+				const HookData* getData() const;
+			private:
+				const HookData* data;
+			};
+		}
 	}
 
 }
 extern "C" {
 	static void uskomaton_perl_register(void* handle, char* name, char* filename);
-	static void uskomaton_perl_hook_server(void* handle, HookData* data);
+	static void uskomaton_perl_hook_server(void* handle, const char* filename, HookData* data);
 	static void uskomaton_perl_hook_command(void* handle, const char* filename, HookData* data);
 	static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message);
 	static void* uskomaton_perl_new();
