@@ -1,7 +1,7 @@
 use Uskomaton;
 
 Uskomaton::register("mita");
-Uskomaton::hookOnMessage(\&test2);
+Uskomaton::hookCommand("test", \&test2);
 
 sub test2 {
 	my ($ctx, $channel, $message, $sender) = @_;

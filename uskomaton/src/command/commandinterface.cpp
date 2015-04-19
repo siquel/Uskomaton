@@ -21,7 +21,7 @@ void CommandInterface::processLine(const std::string& context, const std::string
 	parsedMessage = parsedMessage.substr(name.size() + (parsedMessage.find(" ") != std::string::npos ? 1 : 0));
 
 	auto commands = bot->getCommands();
-	for (size_t i = 0; commands.size(); i++) {
+	for (size_t i = 0; i < commands.size(); i++) {
 		if (commands[i]->getName() != name) continue;
 
 		commands[i]->handleLine(*bot, context, channel, parsedMessage, sender);
