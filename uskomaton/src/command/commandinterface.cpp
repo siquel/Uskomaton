@@ -19,6 +19,15 @@ void CommandInterface::processLine(const std::string& context, const std::string
 	}
 	std::string name(parsedMessage.substr(0, space));
 	parsedMessage = parsedMessage.substr(name.size() + (parsedMessage.find(" ") != std::string::npos ? 1 : 0));
+
+	auto commands = bot->getCommands();
+	for (size_t i = 0; commands.size(); i++) {
+		if (commands[i]->getName() != name) continue;
+
+		commands[i]->handleLine(*bot, context, channel, parsedMessage, sender);
+		return;
+	}
+
 	using namespace uskomaton::scripting;
 	for (size_t i = 0; i < bot->getScripts().size(); i++) {
 		ScriptingAPI* api = bot->getScripts()[i];
@@ -28,6 +37,7 @@ void CommandInterface::processLine(const std::string& context, const std::string
 			// not found
 			if (command == nullptr) continue;
 			command->handleLine(*bot, context, channel, parsedMessage, sender);
+			return;
 		}
 	}
 }

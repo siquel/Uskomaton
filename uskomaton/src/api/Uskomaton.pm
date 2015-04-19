@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use File::Basename ();
 use File::Spec();
+use Symbol();
 our %plugins;
 
 sub register {
@@ -35,7 +36,8 @@ sub hookCommand {
 		Uskomaton::print("callback isn't reference!");
 		die "callback isn't reference!";
 	}
-	Uskomaton::Internal::hookCommand($filename, $name, $pkg, $callback);
+	my $hook = Uskomaton::Internal::hookCommand($filename, $name, $pkg, $callback);
+	push @{$pkgInfo->{hooks}}, $hook if defined $hook;
 }
 
 sub load {
@@ -60,14 +62,48 @@ sub load {
 		#if (!exists $plugins{$pkg}{loaded})
 		if ($@) {
 			#TODO
-			die "something went wrong";
+			$@ =~ s/\(eval \d+\)/$file/g;
+			Uskomaton::print("Error loading '$file': \n$@\n");
+			Uskomaton::print("Unloading...");
+			Uskomaton::unload($plugins{$pkg}{filename});
 			return 1;
 		}
 	} else {
-		print "error opening $file : $!\n";
+		Uskomaton::print( "error opening $file : $!\n");
 		return 2;
 	}
 	return 0;
+}
+
+sub unload {
+	my $file = shift @_;
+	my $pkg = file2Package($file);
+	my $info = packageInfo($pkg);
+
+	if ($info) {
+		Uskomaton::print("package found \n");
+		if (exists $info->{hooks}) {
+			Uskomaton::print("Hooks found..\n");
+			for my $hook ( @{$info->{hooks}} ) {
+				Uskomaton::print("Unhooking hook $hook");
+				Uskomaton::unhook($hook, $pkg);
+			}
+		}
+		Symbol::delete_package($pkg);
+		delete $plugins{$pkg};
+	} else {
+		Uskomaton::print("$file is not loaded\n");
+	}
+}
+
+sub unhook {
+	my $hook = shift @_;
+	my $pkg = shift @_;
+	($pkg) = caller unless $pkg;
+	my $info = packageInfo($pkg);
+	if (defined($hook)) {
+		return Uskomaton::Internal::unhook($hook);
+	}
 }
 
 sub hookServer {
@@ -78,7 +114,9 @@ sub hookServer {
 		die "callback isn't reference";
 	}
 	my $package = findPackage();
-	Uskomaton::Internal::hookServer($message, $callback, $package);
+	my $info = packageInfo($package);
+	my $hook = Uskomaton::Internal::hookServer($message, $callback, $package);
+	push @{$info->{hooks}}, $hook if defined $hook;
 }
 
 sub sendMessage {

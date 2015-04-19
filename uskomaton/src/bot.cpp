@@ -2,6 +2,7 @@
 #include "perl.hpp"
 #include "command.hpp"
 #include <algorithm>
+#include "command/unload_command.hpp"
 using namespace uskomaton;
 Bot::Bot(const uskomaton::config::Configuration& conf)
 	: initialized(false), config(conf) {
@@ -24,8 +25,9 @@ Bot::~Bot() {
 
 void Bot::initialize() {
 	if (initialized) return;
+	using namespace uskomaton::command;
 	commands.reserve(10);
-
+	commands.push_back(new UnloadCommand());
 	for (auto& serverConfig : config.getServerConfigs()) {
 		IrcClient* client = new IrcClient(serverConfig.name, serverConfig.username, serverConfig.login);
 		client->addListener(new BotMessageListener(this, serverConfig));
@@ -101,5 +103,9 @@ void uskomaton::Bot::connectServers() {
 		}
 		i++;
 	}
+}
+
+const std::vector<uskomaton::command::Command*> uskomaton::Bot::getCommands() const {
+	return commands;
 }
 

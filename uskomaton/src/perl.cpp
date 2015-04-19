@@ -3,7 +3,6 @@
 #include "boost/filesystem.hpp"
 #include "perl.hpp"
 #include <boost/algorithm/string/predicate.hpp>
-
 // TODO this may not be the greatest idea...
 static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
@@ -199,6 +198,7 @@ XS(XS_uskomaton_hook_server) {
 		hookdata->package = newSVsv(package);
 		hookdata->name = std::string(message);
 		uskomaton_perl_hook_server(ph, hookdata);
+		XSRETURN_IV(PTR2IV(hookdata));
 	}
 	else {
 		std::cout << "Usage: Uskomaton::Internal::hookServer($message, $callback, $package)" << std::endl;
@@ -272,8 +272,18 @@ XS(XS_uskomaton_hook_command) {
 		data->package = newSVsv(package);
 		data->name = std::string(name);
 		uskomaton_perl_hook_command(ph, filename, data);
+		XSRETURN_IV(PTR2IV(data));
+	}
+}
+
+XS(XS_uskomaton_unhook) {
+	HookData* data;
+	dXSARGS;
+	if (items == 1) {
+		data = INT2PTR(HookData*, SvUV(ST(0)));
 
 	}
+	XSRETURN_EMPTY;
 }
 
 static void xs_init(pTHX) {
@@ -285,6 +295,7 @@ static void xs_init(pTHX) {
 	newXS("Uskomaton::Internal::joinChannel", XS_uskomaton_join_channel, __FILE__);
 	newXS("Uskomaton::Internal::partChannel", XS_uskomaton_part_channel, __FILE__);
 	newXS("Uskomaton::Internal::hookCommand", XS_uskomaton_hook_command, __FILE__);
+	newXS("Uskomaton::Internal::unhook", XS_uskomaton_unhook, __FILE__);
 
 	newXS("Uskomaton::Irc::getChannels", XS_uskomaton_get_channels, __FILE__);
 	newXS("Uskomaton::Irc::getNick", XS_uskomaton_get_nick, __FILE__);
@@ -331,7 +342,6 @@ void uskomaton::scripting::PerlScriptingAPI::autoloadFrom(const std::string& pat
 	namespace fs = boost::filesystem;
 	fs::path dir(path);
 	fs::directory_iterator end;
-
 	if (fs::exists(dir) && fs::is_directory(dir)) {
 		for (fs::directory_iterator iter(dir); iter != end; ++iter) {
 			if (fs::is_regular_file(iter->status())) {
@@ -347,10 +357,26 @@ void uskomaton::scripting::PerlScriptingAPI::autoloadFrom(const std::string& pat
 	else {
 		std::cout << path << " doesn't exist or isn't a directory" << std::endl;
 	}
+
 }
 
 const std::vector<uskomaton::scripting::Script*> uskomaton::scripting::PerlScriptingAPI::getScripts() const {
 	return loadedScripts;
+}
+
+void uskomaton::scripting::PerlScriptingAPI::unload(Script* s) {
+	const char* cfile = s->getFilename().c_str();
+	char file[255];
+	strcpy(file, cfile);
+	execute_perl(sv_2mortal(newSVpv("Uskomaton::unload", 0)), file);
+	// TODO remove script
+}
+
+Script* PerlScriptingAPI::getScript(ScriptPredicate pred) const {
+	for (size_t i = 0; i < loadedScripts.size(); i++) {
+		if (pred(loadedScripts[i])) return loadedScripts[i];
+	}
+	return nullptr;
 }
 
 void PerlScriptingAPI::executeHookWithArguments(const HookData* hook, int argc, ...) {

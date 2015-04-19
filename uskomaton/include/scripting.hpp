@@ -1,8 +1,10 @@
 #pragma once
 #include "script.hpp"
+#include <functional>
 namespace uskomaton {
 	class Bot;
 	namespace scripting {
+		typedef std::function<bool(Script* script)> ScriptPredicate;
 		class ScriptingAPI {
 		public:
 			ScriptingAPI() {};
@@ -12,6 +14,8 @@ namespace uskomaton {
 			virtual void processOnMessage(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) = 0;
 			virtual void autoloadFrom(const std::string& path) = 0;
 			virtual const std::vector<Script*> getScripts() const = 0;
+			virtual Script* getScript(ScriptPredicate pred) const = 0;
+			virtual void unload(Script*) = 0;
 		};
 	}
 }

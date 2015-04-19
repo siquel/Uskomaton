@@ -31,6 +31,8 @@ namespace uskomaton {
 			void autoloadFrom(const std::string& path);
 			const std::vector<Script*> getScripts() const;
 			void executeHookWithArguments(const HookData* hook, int argcount, ...);
+			Script* getScript(ScriptPredicate pred) const override;
+			void unload(Script*) override;
 		};
 	}
 	namespace command {

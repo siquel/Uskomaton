@@ -63,6 +63,9 @@
     <ClCompile Include="src\command\perlcommand.cpp">
       <Filter>Source Files\script</Filter>
     </ClCompile>
+    <ClCompile Include="src\command\unload_command.cpp">
+      <Filter>Source Files\command</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.hpp">
@@ -99,6 +102,9 @@
       <Filter>Header Files\command</Filter>
     </ClInclude>
     <ClInclude Include="include\command.hpp">
+      <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\unload_command.hpp">
       <Filter>Header Files\command</Filter>
     </ClInclude>
   </ItemGroup>
