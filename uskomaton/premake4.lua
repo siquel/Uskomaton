@@ -13,7 +13,7 @@ solution("uskomaton")
 		language "C++"
 		files { "include/**.hpp", "src/**.cpp"}
 		includedirs { "include" }
-		prebuildcommands { "cd src/api && perl generate_header.pl" }
+		prebuildcommands { "cd src/perl && perl generate_header.pl" }
 
 		configuration "linux"
 			links { "boost_system", "boost_thread", "boost_filesystem", "perl", "pthread"  }

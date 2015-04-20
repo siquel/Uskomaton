@@ -36,9 +36,6 @@
     <ClCompile Include="src\bot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\irc\ircclient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,12 +44,6 @@
     </ClCompile>
     <ClCompile Include="src\conf\config.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\perl.cpp">
-      <Filter>Source Files\script</Filter>
-    </ClCompile>
-    <ClCompile Include="src\script.cpp">
-      <Filter>Source Files\script</Filter>
     </ClCompile>
     <ClCompile Include="src\command\unload_command.cpp">
       <Filter>Source Files\command</Filter>
@@ -71,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="src\command\perl_script_command.cpp">
       <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\script\perl.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\script\script.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\command.cpp">
+      <Filter>Source Files\command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,9 +101,6 @@
     <ClInclude Include="include\script.hpp">
       <Filter>Header Files\script</Filter>
     </ClInclude>
-    <ClInclude Include="include\perl.hpp">
-      <Filter>Header Files\script</Filter>
-    </ClInclude>
     <ClInclude Include="include\command.hpp">
       <Filter>Header Files\command</Filter>
     </ClInclude>
@@ -127,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="include\command\command_interface.hpp">
       <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\script\perl.hpp">
+      <Filter>Header Files\script</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

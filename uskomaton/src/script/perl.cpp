@@ -5,14 +5,25 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "script/perl_server_hook.hpp"
 #include "command/perl_script_command.hpp"
-// TODO this may not be the greatest idea...
-static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
 using namespace uskomaton::command;
+
 extern "C" {
 	static void xs_init(pTHX);
 	static int perl_load_file(char* filename);
+	static void uskomaton_perl_register(void* handle, char* name, char* filename);
+	static void uskomaton_perl_hook_server(void* handle, const char* filename, HookData* data);
+	static void uskomaton_perl_hook_command(void* handle, const char* filename, HookData* data);
+	static void uskomaton_perl_send_message(void* handle, const char* context, const char* channel, const char* message);
+	static void uskomaton_perl_join_channel(void* handle, const char* context, const char* channel, const char* password);
+	static const char* uskomaton_perl_get_nick(void* handle, const char* context);
+	static void uskomaton_perl_part_channel(void* handle, const char* context, const char* channel);
+	static void* uskomaton_perl_new();
+
 }
+
+// TODO this may not be the greatest idea...
+static void* ph = uskomaton_perl_new();
 
 class PerlScriptingAPI::_Impl {
 private:
@@ -34,7 +45,7 @@ public:
 		char* env[] = { "" };
 
 		static const char def[] = { 
-			#include "api/api.pm.h"
+			#include "../perl/api.pm.h"
 		};
 
 		PERL_SYS_INIT3(&arg_count, (char ***)&perl_args, (char ***)&env);
@@ -45,8 +56,6 @@ public:
 		perl_parse(my_perl, xs_init, arg_count, perl_args, (char**)NULL);
 
 		eval_pv(def, TRUE);
-
-		//perl_load_file("src\\api\\test.pl");
 	}
 	void deinitialize() {
 		if (my_perl == NULL) return;
@@ -135,7 +144,7 @@ static int execute_perl(SV* func, char* args) {
 		printf ("Perl error: expected 1 value from %s, "
 						  "got: %d\n", SvPV_nolen (func), count);
 	} else {
-		ret_value = POPi;
+		ret_value = static_cast<int>(POPi);
 	}
 	PUTBACK;
 	FREETMPS;
@@ -233,6 +242,8 @@ XS(XS_uskomaton_get_nick) {
 	dXSARGS;
 	if (items == 1) {
 		context = SvPV_nolen(ST(0));
+		const char* nick = uskomaton_perl_get_nick(ph, context);
+		// TODO return
 	}
 	else {
 		std::cout << "Usage: Uskomaton::Irc::getNick($context)" << std::endl;
@@ -248,6 +259,7 @@ XS(XS_uskomaton_join_channel) {
 		context = SvPV_nolen(ST(0));
 		channel = SvPV_nolen(ST(1));
 		password = SvPV_nolen(ST(2));
+		uskomaton_perl_join_channel(ph, context, channel, password);
 	}
 	else {
 		std::cout << "Usage: Uskomaton::Irc::joinChannel($context, $channel, $password)" << std::endl;
@@ -261,6 +273,7 @@ XS(XS_uskomaton_part_channel) {
 	if (items == 2) {
 		context = SvPV_nolen(ST(0));
 		channel = SvPV_nolen(ST(1));
+		uskomaton_perl_part_channel(ph, context, channel);
 	}
 	else {
 		std::cout << "Usage: Uskomaton::Irc::partChannel($context, $channel)" << std::endl;
@@ -345,6 +358,18 @@ static void uskomaton_perl_send_message(void* handle, const char* context, const
 static void uskomaton_perl_hook_command(void* handle, const char* filename, HookData* data) {
 	PerlScriptingAPI* api = static_cast<PerlScriptingAPI*>(handle);
 	api->pImpl->hookCommand(filename, data);
+}
+
+static void uskomaton_perl_join_channel(void* handle, const char* context, const char* channel, const char* password) {
+
+}
+
+static void uskomaton_perl_part_channel(void* handle, const char* context, const char* channel) {
+
+}
+
+static const char* uskomaton_perl_get_nick(void* handle, const char* context) {
+	return nullptr;
 }
 
 // TODO gotta pass context?
