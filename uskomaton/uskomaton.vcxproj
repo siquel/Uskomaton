@@ -69,9 +69,9 @@
   <ItemGroup>
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\command.cpp" />
-    <ClCompile Include="src\command\commandinterface.cpp" />
-    <ClCompile Include="src\command\perlcommand.cpp" />
-    <ClCompile Include="src\command\scriptcommand.cpp" />
+    <ClCompile Include="src\command\command_interface.cpp" />
+    <ClCompile Include="src\command\perl_script_command.cpp" />
+    <ClCompile Include="src\command\script_command.cpp" />
     <ClCompile Include="src\command\unload_command.cpp" />
     <ClCompile Include="src\conf\config.cpp" />
     <ClCompile Include="src\irc\botmsglistener.cpp" />
@@ -79,13 +79,18 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\perl.cpp" />
     <ClCompile Include="src\script.cpp" />
+    <ClCompile Include="src\script\perl_server_hook.cpp" />
+    <ClCompile Include="src\script\server_hook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.hpp" />
     <ClInclude Include="include\command.hpp" />
-    <ClInclude Include="include\command\commandinterface.hpp" />
+    <ClInclude Include="include\command\command_interface.hpp" />
+    <ClInclude Include="include\command\perl_script_command.hpp" />
+    <ClInclude Include="include\command\script_command.hpp" />
     <ClInclude Include="include\command\unload_command.hpp" />
     <ClInclude Include="include\conf\config.hpp" />
+    <ClInclude Include="include\forward_declare.hpp" />
     <ClInclude Include="include\irc\botmsglistener.hpp" />
     <ClInclude Include="include\irc\channel.hpp" />
     <ClInclude Include="include\irc\color.hpp" />
@@ -93,6 +98,8 @@
     <ClInclude Include="include\perl.hpp" />
     <ClInclude Include="include\script.hpp" />
     <ClInclude Include="include\scripting.hpp" />
+    <ClInclude Include="include\script\perl_server_hook.hpp" />
+    <ClInclude Include="include\script\server_hook.hpp" />
     <ClInclude Include="include\util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

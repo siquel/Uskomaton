@@ -1,7 +1,8 @@
-#include "command/commandinterface.hpp"
+#include "command/command_interface.hpp"
 #include "bot.hpp"
-#include <script.hpp>
-#include "scripting.hpp"
+#include <script/script.hpp>
+#include "script/scripting.hpp"
+#include "command/script_command.hpp"
 #include "boost/algorithm/string.hpp"
 using namespace uskomaton::command;
 

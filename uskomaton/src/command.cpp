@@ -1,4 +1,4 @@
-#include "command.hpp"
+#include "command/command.hpp"
 using namespace uskomaton::command;
 Command::Command(const std::string& name) : name(name) {
 

@@ -1,22 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "command.hpp"
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_2(uskomaton, command, ScriptCommand);
+USKOMATON_FORWARD_DECL_2(uskomaton, scripting, ServerHook);
 namespace uskomaton {
-	namespace command {
-		class ScriptCommand;
-		namespace hook {
-			class ServerHook {
-			public:
-				ServerHook(const std::string& message);
-				const std::string& getMessage() const {
-					return message;
-				}
-			private:
-				const std::string message;
-			};
-		}
-	}
 	namespace scripting {
 		class Script {
 		public:
@@ -25,14 +13,14 @@ namespace uskomaton {
 			const std::string& getFilename() const;
 			const std::string& getName() const;
 			void hookCommand(command::ScriptCommand* command);
-			void hookServer(command::hook::ServerHook*);
+			void hookServer(ServerHook*);
 			command::ScriptCommand* getCommandByName(const std::string& name) const;
-			const std::vector<command::hook::ServerHook*>& getServerHooks() const;
+			const std::vector<ServerHook*>& getServerHooks() const;
 		private:
 			const std::string filename;
 			const std::string name;
 			std::vector<command::ScriptCommand*> commands;
-			std::vector<command::hook::ServerHook*> serverHooks;
+			std::vector<ServerHook*> serverHooks;
 		};
 	}
 }

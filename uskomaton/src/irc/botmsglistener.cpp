@@ -1,5 +1,5 @@
 #include "irc/botmsglistener.hpp"
-
+#include "script/scripting.hpp"
 #include "bot.hpp"
 #include <algorithm>
 BotMessageListener::BotMessageListener(uskomaton::Bot* bot, const uskomaton::config::ServerConfiguration& config)

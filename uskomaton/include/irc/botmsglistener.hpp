@@ -1,10 +1,10 @@
 #pragma once
 #include "ircclient.hpp"
 #include "conf/config.hpp"
-#include "command/commandinterface.hpp"
-namespace uskomaton {
-	class Bot;
-}
+#include "command/command_interface.hpp"
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
+
 class BotMessageListener : public IrcMessageListener {
 private:
 	uskomaton::Bot* bot;

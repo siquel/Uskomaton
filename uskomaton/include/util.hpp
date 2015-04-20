@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+
 namespace uskomaton {
 	namespace util {
 		static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {

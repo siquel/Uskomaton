@@ -1,21 +1,18 @@
 #pragma once
-#include "script/scripting.hpp"
+#include "scripting.hpp"
+#include "script.hpp"
 #include <iostream>
 #include <memory>
-#include <perl.h>
-#include <EXTERN.h>                     
+#include <EXTERN.h>               
+#include <perl.h>      
 #include <XSUB.h>
-
-USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
-USKOMATON_FORWARD_DECL_2(uskomaton, scripting, Script);
-USKOMATON_FORWARD_DECL_2(uskomaton, scripting, ServerHook);
 
 typedef struct HookData {
 	std::string name;
 	SV* callback;
 	SV* package;
 } HookData;
-
+USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
 namespace uskomaton {
 	namespace scripting {
 		typedef std::function<int(uskomaton::scripting::ServerHook*)> PerlScriptingHookPredicate;

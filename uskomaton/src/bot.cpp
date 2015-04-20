@@ -1,6 +1,6 @@
 #include "bot.hpp"
-#include "perl.hpp"
-#include "command.hpp"
+#include "script/perl.hpp"
+#include "command/command.hpp"
 #include <algorithm>
 #include "command/unload_command.hpp"
 using namespace uskomaton;

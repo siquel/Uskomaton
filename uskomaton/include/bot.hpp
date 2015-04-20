@@ -2,15 +2,13 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <scripting.hpp>
 #include "irc/botmsglistener.hpp"
 #include "irc/channel.hpp"
 #include "conf/config.hpp"
-
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_2(uskomaton, command, Command);
+USKOMATON_FORWARD_DECL_2(uskomaton, scripting, ScriptingAPI);
 namespace uskomaton {
-	namespace command {
-		class Command;
-	}
 	using namespace uskomaton::scripting;
 	using namespace uskomaton::irc;
 	class Bot {

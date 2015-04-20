@@ -54,17 +54,23 @@
     <ClCompile Include="src\script.cpp">
       <Filter>Source Files\script</Filter>
     </ClCompile>
-    <ClCompile Include="src\command\commandinterface.cpp">
-      <Filter>Source Files\command</Filter>
-    </ClCompile>
-    <ClCompile Include="src\command\scriptcommand.cpp">
-      <Filter>Source Files\command</Filter>
-    </ClCompile>
-    <ClCompile Include="src\command\perlcommand.cpp">
-      <Filter>Source Files\script</Filter>
-    </ClCompile>
     <ClCompile Include="src\command\unload_command.cpp">
       <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\script\server_hook.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\script_command.cpp">
+      <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\script\perl_server_hook.cpp">
+      <Filter>Source Files\script</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\command_interface.cpp">
+      <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\command\perl_script_command.cpp">
+      <Filter>Source Files\script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,13 +104,28 @@
     <ClInclude Include="include\perl.hpp">
       <Filter>Header Files\script</Filter>
     </ClInclude>
-    <ClInclude Include="include\command\commandinterface.hpp">
-      <Filter>Header Files\command</Filter>
-    </ClInclude>
     <ClInclude Include="include\command.hpp">
       <Filter>Header Files\command</Filter>
     </ClInclude>
     <ClInclude Include="include\command\unload_command.hpp">
+      <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\forward_declare.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\script\server_hook.hpp">
+      <Filter>Header Files\script</Filter>
+    </ClInclude>
+    <ClInclude Include="include\script\perl_server_hook.hpp">
+      <Filter>Header Files\script</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\perl_script_command.hpp">
+      <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\script_command.hpp">
+      <Filter>Header Files\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\command\command_interface.hpp">
       <Filter>Header Files\command</Filter>
     </ClInclude>
   </ItemGroup>

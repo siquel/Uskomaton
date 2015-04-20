@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
 namespace uskomaton {
-	class Bot;
 	namespace command {
 
 		class CommandInterface {

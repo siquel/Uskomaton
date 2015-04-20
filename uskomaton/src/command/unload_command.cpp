@@ -1,5 +1,7 @@
 #include "command/unload_command.hpp"
 #include "bot.hpp"
+#include "script/script.hpp"
+#include "script/scripting.hpp"
 using namespace uskomaton::command;
 UnloadCommand::UnloadCommand() : Command("unload") {
 

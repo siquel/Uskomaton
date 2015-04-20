@@ -1,7 +1,8 @@
-#include "script.hpp"
-#include "command.hpp"
+#include "script/script.hpp"
+#include "command/script_command.hpp"
+
 using namespace uskomaton::scripting;
-using namespace uskomaton::command::hook;
+using namespace uskomaton::command;
 
 Script::Script(const std::string& filename, const std::string& name) 
 	: filename(filename), name(name) {
@@ -31,14 +32,10 @@ uskomaton::command::ScriptCommand* uskomaton::scripting::Script::getCommandByNam
 	return nullptr;
 }
 
-const std::vector<uskomaton::command::hook::ServerHook*>& uskomaton::scripting::Script::getServerHooks() const {
+const std::vector<ServerHook*>& uskomaton::scripting::Script::getServerHooks() const {
 	return serverHooks;
 }
 
-void uskomaton::scripting::Script::hookServer(command::hook::ServerHook* hook) {
+void uskomaton::scripting::Script::hookServer(ServerHook* hook) {
 	serverHooks.push_back(hook);
-}
-
-ServerHook::ServerHook(const std::string& message) : message(message) {
-
 }

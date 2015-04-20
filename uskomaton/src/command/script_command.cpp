@@ -1,4 +1,4 @@
-#include "command.hpp"
+#include "command/script_command.hpp"
 #include "bot.hpp"
 using namespace uskomaton::command;
 void ScriptCommand::handleLine(uskomaton::Bot& bot, const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) {

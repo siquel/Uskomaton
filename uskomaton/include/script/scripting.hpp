@@ -1,8 +1,11 @@
 #pragma once
-#include "script.hpp"
+
 #include <functional>
+#include <vector>
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_2(uskomaton, scripting, Script);
+USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
 namespace uskomaton {
-	class Bot;
 	namespace scripting {
 		typedef std::function<bool(Script* script)> ScriptPredicate;
 		class ScriptingAPI {

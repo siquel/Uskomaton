@@ -1,13 +1,14 @@
 #include "bot.hpp"
-#include "command.hpp"
+#include "command/command.hpp"
 #include "boost/filesystem.hpp"
-#include "perl.hpp"
+#include "script/perl.hpp"
 #include <boost/algorithm/string/predicate.hpp>
+#include "script/perl_server_hook.hpp"
+#include "command/perl_script_command.hpp"
 // TODO this may not be the greatest idea...
 static void* ph = uskomaton_perl_new();
 using namespace uskomaton::scripting;
 using namespace uskomaton::command;
-using namespace uskomaton::command::hook;
 extern "C" {
 	static void xs_init(pTHX);
 	static int perl_load_file(char* filename);
