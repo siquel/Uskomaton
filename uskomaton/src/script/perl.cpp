@@ -18,6 +18,7 @@ extern "C" {
 	static void uskomaton_perl_join_channel(void* handle, const char* context, const char* channel, const char* password);
 	static const char* uskomaton_perl_get_nick(void* handle, const char* context);
 	static void uskomaton_perl_part_channel(void* handle, const char* context, const char* channel);
+	static void uskomaton_perl_get_channels(void* handle, const char* context);
 	static void* uskomaton_perl_new();
 
 }
@@ -231,6 +232,7 @@ XS(XS_uskomaton_get_channels) {
 	dXSARGS;
 	if (items == 1) {
 		context = SvPV_nolen(ST(0));
+		uskomaton_perl_get_channels(ph, context);
 	}
 	else {
 		std::cout << "Usage: Uskomaton::Irc::getChannels($context)" << std::endl;
@@ -370,6 +372,10 @@ static void uskomaton_perl_part_channel(void* handle, const char* context, const
 
 static const char* uskomaton_perl_get_nick(void* handle, const char* context) {
 	return nullptr;
+}
+
+void uskomaton_perl_get_channels(void* handle, const char* context) {
+
 }
 
 // TODO gotta pass context?

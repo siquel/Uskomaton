@@ -26,9 +26,9 @@ namespace uskomaton {
 		const std::vector<Channel>& getJoinedChannels(const std::string& serverName);
 		const std::vector<uskomaton::command::Command*> getCommands() const;
 	private:
+		bool initialized;
 		uskomaton::config::Configuration config;
 		IrcClient* getClientFor(const std::string& name) const;
-		bool initialized;
 		std::vector<IrcClient*> clients;
 		std::map<std::string, std::vector<Channel>> channels;
 		std::vector<command::Command*> commands;

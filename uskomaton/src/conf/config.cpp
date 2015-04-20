@@ -36,7 +36,7 @@ bool uskomaton::config::Configuration::fromFile(const std::string& filename, Con
 		const boost::property_tree::ptree& value = entry.second;
 
 		if (key.find("server") != std::string::npos) {
-			int index = 0;
+			size_t index = 0;
 			if ((index = key.find(" ")) == std::string::npos) {
 				std::cout << "Invalid server configuration, skipping " << key << std::endl;
 				continue;

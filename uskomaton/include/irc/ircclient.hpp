@@ -23,16 +23,9 @@ namespace uskomaton {
 
 		class IrcClient {
 		private:
-			std::vector<IrcMessageListener*> listeners;
-			void onRawMessage(const std::string& msg);
-			void onServerPing(const std::string& ping);
-			void notifyListeners(notification_t what);
-			void receive(boost::system::error_code const&, size_t);
-			void read();
-			void processCommand(const std::string& command, const std::string& target, std::string& sender, std::vector<std::string>& tokens);
-			std::string login;
-			std::string nick;
 			std::string server;
+			std::string nick;
+			std::string login;
 
 			boost::asio::io_service ioService;
 			boost::asio::streambuf buffer;
@@ -40,6 +33,16 @@ namespace uskomaton {
 
 			boost::thread inputThread;
 			boost::thread outputThread;
+
+			std::vector<IrcMessageListener*> listeners;
+
+			void onRawMessage(const std::string& msg);
+			void onServerPing(const std::string& ping);
+			void notifyListeners(notification_t what);
+			void receive(boost::system::error_code const&, size_t);
+			void read();
+			void processCommand(const std::string& command, const std::string& target, std::string& sender, std::vector<std::string>& tokens);
+			
 
 		public:
 			IrcClient(const std::string& context, const std::string& nick, const std::string& login);

@@ -14,7 +14,7 @@ CommandInterface::CommandInterface(uskomaton::Bot* bot, const std::string& prefi
 void CommandInterface::processLine(const std::string& context, const std::string& channel, const std::string& message, const std::string& sender) {
 	if (!boost::starts_with(message, prefix)) return;
 	std::string parsedMessage(message.substr(prefix.size()));
-	int space = 0;
+	size_t space = 0;
 	if ((space = parsedMessage.find(" ")) == std::string::npos) {
 		space = parsedMessage.size();
 	}
