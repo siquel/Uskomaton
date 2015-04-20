@@ -28,6 +28,9 @@
     <Filter Include="Source Files\command">
       <UniqueIdentifier>{2a748b60-ec8b-4820-a1b2-7720cd931a64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\irc">
+      <UniqueIdentifier>{eefbc592-638f-4764-9472-ae4d5c55fc1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -71,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="src\command\command.cpp">
       <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\irc\channel.cpp">
+      <Filter>Source Files\irc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,8 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/signals2/signal.hpp>
-
+#include "forward_declare.hpp"
+USKOMATON_FORWARD_DECL_1(uskomaton, Bot);
 class IrcMessageListener {
 public:
 	IrcMessageListener() = default;
@@ -23,6 +24,7 @@ namespace uskomaton {
 
 		class IrcClient {
 		private:
+			uskomaton::Bot* bot;
 			std::string server;
 			std::string nick;
 			std::string login;
@@ -42,10 +44,10 @@ namespace uskomaton {
 			void receive(boost::system::error_code const&, size_t);
 			void read();
 			void processCommand(const std::string& command, const std::string& target, std::string& sender, std::vector<std::string>& tokens);
-			
+			void processServerResponse(int code, const std::string& line, std::vector<std::string>& tokens);
 
 		public:
-			IrcClient(const std::string& context, const std::string& nick, const std::string& login);
+			IrcClient(uskomaton::Bot*, const std::string& context, const std::string& nick, const std::string& login);
 			~IrcClient();
 			const std::string& getServerName() const;
 			void addListener(IrcMessageListener* listener);

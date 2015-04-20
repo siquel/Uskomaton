@@ -5,7 +5,7 @@ namespace uskomaton {
 	namespace irc {
 		class Channel {
 		public:
-			Channel();
+			Channel(const std::string& name);
 			// channels topic
 			const std::string& getTopic() const;
 			// channels name

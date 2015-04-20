@@ -29,7 +29,7 @@ void Bot::initialize() {
 	commands.reserve(10);
 	commands.push_back(new UnloadCommand());
 	for (auto& serverConfig : config.getServerConfigs()) {
-		IrcClient* client = new IrcClient(serverConfig.name, serverConfig.username, serverConfig.login);
+		IrcClient* client = new IrcClient(this, serverConfig.name, serverConfig.username, serverConfig.login);
 		client->addListener(new BotMessageListener(this, serverConfig));
 		clients.push_back(client);
 
@@ -107,5 +107,10 @@ void uskomaton::Bot::connectServers() {
 
 const std::vector<uskomaton::command::Command*> uskomaton::Bot::getCommands() const {
 	return commands;
+}
+
+void uskomaton::Bot::addChannel(const std::string& context, const Channel& channel) {
+	if (channels.find(context) == channels.end()) channels[context] = std::vector<Channel>();
+	channels[context].push_back(channel);
 }
 

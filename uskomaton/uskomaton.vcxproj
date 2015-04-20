@@ -75,6 +75,7 @@
     <ClCompile Include="src\command\unload_command.cpp" />
     <ClCompile Include="src\conf\config.cpp" />
     <ClCompile Include="src\irc\botmsglistener.cpp" />
+    <ClCompile Include="src\irc\channel.cpp" />
     <ClCompile Include="src\irc\ircclient.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\script\perl.cpp" />

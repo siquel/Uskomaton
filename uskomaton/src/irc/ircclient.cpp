@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include "util.hpp"
+#include "bot.hpp"
 
 void IrcMessageListener::onRawMessage(const std::string& msg, const std::string& command, const std::string& target) {}
 void IrcMessageListener::onMessage(const std::string& channel, const std::string& message, const std::string& sender) {}
@@ -12,8 +13,8 @@ void IrcMessageListener::onPrivateMessage(const std::string& target, const std::
 
 using namespace uskomaton::irc;
 
-IrcClient::IrcClient(const std::string& context, const std::string& nick, const std::string& login)
-	: server(context), nick(nick), login(login), socket(ioService){
+IrcClient::IrcClient(uskomaton::Bot* bot, const std::string& context, const std::string& nick, const std::string& login)
+	: bot(bot), server(context), nick(nick), login(login), socket(ioService){
 
 }
 
@@ -121,6 +122,8 @@ void IrcClient::onRawMessage(const std::string& raw) {
 	std::string target = (tokens.empty() ? "" : tokens[0]);
 	if (target.size() != 0 && target.at(0) == ':') {
 		target = target.substr(1);
+		// remove \r
+		target = target.substr(0, target.size() - 1);
 	}
 	// valid IRC line?
 	if (sourceraw.size() != 0 && sourceraw.at(0) != ':') {
@@ -130,7 +133,17 @@ void IrcClient::onRawMessage(const std::string& raw) {
 
 	std::string userhostmask[3];
 	sourceraw = sourceraw.substr(1);
-	uskomaton::util::userHostmaskFromRawLine(userhostmask, sourceraw);
+	if (sourceraw.find("!") != std::string::npos || sourceraw.find("@") != std::string::npos) {
+		uskomaton::util::userHostmaskFromRawLine(userhostmask, sourceraw);
+	}
+	else {
+		// todo code
+		int code = -1;
+		if (code != -1) {
+			processServerResponse(code, raw, tokens);
+			return;
+		}
+	}
 	
 	// TODO parse users etc
 	processCommand(command, target, userhostmask[0], tokens);
@@ -190,6 +203,10 @@ const std::string& IrcClient::getServerName() const {
 	return server;
 }
 
+void uskomaton::irc::IrcClient::processServerResponse(int code, const std::string& line, std::vector<std::string>& tokens) {
+
+}
+
 void IrcClient::processCommand(const std::string& command, const std::string& target, std::string& sender, std::vector<std::string>& tokens) {
 	std::stringstream ss;
 	std::string message;
@@ -244,6 +261,9 @@ void IrcClient::processCommand(const std::string& command, const std::string& ta
 	}
 	else if (command == "JOIN") {
 		if (sender == nick) {
+			bot->addChannel(server, Channel(target));
+			sendRawMessage(std::string("WHO ") + target);
+			sendRawMessage(std::string("MODE ") + target);
 			// TODO add to channels
 		}
 		notifyListeners([&target, &message, &sender](IrcMessageListener* listener) {

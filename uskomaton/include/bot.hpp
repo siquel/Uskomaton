@@ -25,6 +25,8 @@ namespace uskomaton {
 		void terminate();
 		const std::vector<Channel>& getJoinedChannels(const std::string& serverName);
 		const std::vector<uskomaton::command::Command*> getCommands() const;
+
+		void addChannel(const std::string&, const Channel& channel);
 	private:
 		bool initialized;
 		uskomaton::config::Configuration config;
